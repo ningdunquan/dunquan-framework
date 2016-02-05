@@ -1,0 +1,50 @@
+package org.dunquan.framework.interceptor;
+
+import org.dunquan.framework.api.ApplicationAble;
+import org.dunquan.framework.api.HttpServletRequestAble;
+import org.dunquan.framework.api.HttpServletResponseAble;
+import org.dunquan.framework.api.HttpSessionAble;
+import org.dunquan.framework.api.RequestAble;
+import org.dunquan.framework.api.ServletContextAble;
+import org.dunquan.framework.api.SessionAble;
+import org.dunquan.framework.context.ActionContext;
+import org.dunquan.framework.context.ExcuteContext;
+
+public class ServletRefHandler extends AbstractHandler {
+
+	@Override
+	public void hanlder(ExcuteContext excuteContext) {
+		Object action = excuteContext.getAction();
+		ActionContext actionContext = excuteContext.getActionContext();
+		
+		if(action instanceof HttpServletRequestAble) {
+			((HttpServletRequestAble)action).setHttpServletRequest(actionContext.getHttpServletRequest());
+		}
+		
+		if(action instanceof HttpServletResponseAble) {
+			((HttpServletResponseAble)action).setHttpServletResponse(actionContext.getHttpServletResponse());
+		}
+		
+		if(action instanceof HttpSessionAble) {
+			((HttpSessionAble)action).setHttpSession(actionContext.getHttpSession());
+		}
+		
+		if(action instanceof ServletContextAble) {
+			((ServletContextAble)action).setServletContext(actionContext.getServletContext());
+		}
+
+		if(action instanceof RequestAble) {
+			((RequestAble)action).setRequest(actionContext.getHttpServletRequestMap());
+		}
+		
+		if(action instanceof ApplicationAble) {
+			((ApplicationAble)action).setApplication(actionContext.getApplicationMap());
+		}
+		
+		if(action instanceof SessionAble) {
+			((SessionAble)action).setSession(actionContext.getHttpSessionMap());
+		}
+		
+	}
+
+}
