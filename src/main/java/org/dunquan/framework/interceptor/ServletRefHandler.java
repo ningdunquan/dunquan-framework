@@ -8,12 +8,12 @@ import org.dunquan.framework.api.RequestAble;
 import org.dunquan.framework.api.ServletContextAble;
 import org.dunquan.framework.api.SessionAble;
 import org.dunquan.framework.context.ActionContext;
-import org.dunquan.framework.context.ExcuteContext;
+import org.dunquan.framework.context.ExecuteContext;
 
 public class ServletRefHandler extends AbstractHandler {
 
 	@Override
-	public void hanlder(ExcuteContext excuteContext) {
+	public void hanlder(ExecuteContext excuteContext) {
 		Object action = excuteContext.getAction();
 		ActionContext actionContext = excuteContext.getActionContext();
 		

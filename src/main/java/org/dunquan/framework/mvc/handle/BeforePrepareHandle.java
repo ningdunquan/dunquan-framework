@@ -1,4 +1,4 @@
-package org.dunquan.framework.handle;
+package org.dunquan.framework.mvc.handle;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

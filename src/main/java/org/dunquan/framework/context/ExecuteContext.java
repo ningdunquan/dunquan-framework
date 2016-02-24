@@ -5,16 +5,16 @@ package org.dunquan.framework.context;
  * @author Administrator
  *
  */
-public class ExcuteContext {
+public class ExecuteContext {
 
 	private ActionContext actionContext;
 	
 	private Object action;
 
-	public ExcuteContext() {
+	public ExecuteContext() {
 		super();
 	}
-	public ExcuteContext(ActionContext actionContext, Object action) {
+	public ExecuteContext(ActionContext actionContext, Object action) {
 		super();
 		this.actionContext = actionContext;
 		this.action = action;

@@ -3,6 +3,7 @@ package org.dunquan.framework.mvc.core;
 public class RequestBean {
 
 	private String requestPath;
+	
 	private String requestMethodName;
 	
 	public String getRequestPath() {
