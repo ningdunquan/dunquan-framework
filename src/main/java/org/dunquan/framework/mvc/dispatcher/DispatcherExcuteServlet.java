@@ -13,7 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.dunquan.framework.context.ActionContext;
 import org.dunquan.framework.exception.DispatcherException;
+import org.dunquan.framework.factory.InstanceFactory;
 import org.dunquan.framework.mvc.core.ActionCommand;
+import org.dunquan.framework.mvc.core.ExceptionHandler;
 import org.dunquan.framework.mvc.core.RequestBean;
 import org.dunquan.framework.mvc.handle.BeforePrepareHandle;
 import org.dunquan.framework.mvc.handle.ManagerHandle;
@@ -32,7 +34,10 @@ public class DispatcherExcuteServlet extends HttpServlet {
 	private Map<String, ActionSourse> actionMap;
 	
 	private BeforePrepareHandle prepareHandle;
+	
 	private ManagerHandle managerHandle;
+	
+	private ExceptionHandler exceptionHandler;
 	
 	
 	/**
@@ -42,6 +47,7 @@ public class DispatcherExcuteServlet extends HttpServlet {
 		
 		prepareHandle = new BeforePrepareHandle();
 		managerHandle = new ManagerHandle();
+		exceptionHandler = InstanceFactory.getExceptionHandler();
 	}
 
 	
@@ -60,31 +66,32 @@ public class DispatcherExcuteServlet extends HttpServlet {
 		ActionSourse actionSourse = findActionSourse(url, actionMapSourse);
 		
 		if(actionSourse == null) {
-			errorDispatcher(response, "actionSourse为空");
+			errorDispatcher(request, response, "can't find action", null);
 			return;
 		}
 
-		
-		ActionCommand actionCommand = new ActionCommand(requestBean, actionContext, managerHandle.getApplicationBeanLoader(), actionSourse);
-		
-		actionCommand.execute();
+		try {
+			ActionCommand actionCommand = new ActionCommand(requestBean, actionContext, managerHandle.getApplicationBeanLoader(), actionSourse);
+			
+			actionCommand.execute();
+		} catch (Exception e) {
+			errorDispatcher(request, response, "", e);
+		}finally {
+			actionContext.destroy();
+		}
 	}
 
 
 	/**
-	 * 找不到请求的方法，返回404错误
+	 * 异常处理
+	 * @param request
 	 * @param response
-	 * @throws IOException
+	 * @param string
+	 * @param object
 	 */
-	private void errorDispatcher(HttpServletResponse response, String error)
-			throws IOException {
-		try {
-			throw new DispatcherException("找不到对应的action, " + error);
-		} catch (DispatcherException e) {
-			e.printStackTrace();
-		}
-		response.sendError(404);
-		return;
+	private void errorDispatcher(HttpServletRequest request,
+			HttpServletResponse response, String msg, Exception e) {
+		exceptionHandler.handleError(request, response, msg, e);
 	}
 
 	/**

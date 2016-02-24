@@ -1,15 +1,15 @@
-package org.dunquan.framework.mvc.handle;
+package org.dunquan.framework.mvc.core;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.dunquan.framework.context.ExecuteContext;
 import org.dunquan.framework.interceptor.AbstractHandler;
 import org.dunquan.framework.interceptor.ServletRefHandler;
 
-public class ActionHandle {
+public class ActionHandler {
 
-	private static List<AbstractHandler> handlers = new ArrayList<AbstractHandler>();
+	private static List<AbstractHandler> handlers = new CopyOnWriteArrayList<AbstractHandler>();
 	
 	static{
 		handlers.add(new ServletRefHandler());

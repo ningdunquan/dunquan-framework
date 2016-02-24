@@ -177,4 +177,8 @@ public class ActionContext implements Serializable{
 	public Object contextGet(String key) {
 		return contextMap.get(key);
 	}
+	
+	public void destroy() {
+		threadLocal.remove();
+	}
 }

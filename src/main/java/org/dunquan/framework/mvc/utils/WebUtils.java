@@ -1,6 +1,7 @@
 package org.dunquan.framework.mvc.utils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.dunquan.framework.mvc.core.RequestBean;
 
@@ -22,5 +23,16 @@ public class WebUtils {
     	requestBean.setRequestMethodName(method);
     	
     	return requestBean;
+    }
+    
+    /**
+     * 发送错误代码
+     */
+    public static void sendError(int code, String message, HttpServletResponse response) {
+        try {
+            response.sendError(code, message);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

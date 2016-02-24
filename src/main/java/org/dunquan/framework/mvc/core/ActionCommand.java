@@ -17,7 +17,6 @@ import org.dunquan.framework.context.ExecuteContext;
 import org.dunquan.framework.exception.DispatcherException;
 import org.dunquan.framework.exception.MyException;
 import org.dunquan.framework.loader.ApplicationBeanLoader;
-import org.dunquan.framework.mvc.handle.ActionHandle;
 import org.dunquan.framework.sourse.ActionSourse;
 import org.dunquan.framework.sourse.Result;
 import org.dunquan.framework.util.BeanUtil;
@@ -46,41 +45,37 @@ public class ActionCommand {
 		HttpServletRequest request = actionContext.getHttpServletRequest();
 		Map<String, String> paramMap = new ConcurrentHashMap<String, String>();
 		getAllDispatcherParameter(paramMap, request);
-		
-		String actionUrl = actionSourse.getActionUrl();
-		//actionUrl是否包含*符号
-		boolean flag = actionUrl.contains("*");
-		
-		String refClass = actionSourse.getRefClass();
-		Object object = applicationBeanLoader.getBean(refClass);
-		
 		HttpServletResponse response = actionContext.getHttpServletResponse();
 		
-		if(object == null) {
+		Object action = createAction();
+		
+		if(action == null) {
 			errorDispatcher(response, "action为空");
 			return;
 		}
 		
 		String methodName = actionSourse.getActionMethod();
-		methodName = findMethodName(requestBean.getRequestPath(), actionUrl, flag, methodName);
+		
+		String actionUrl = actionSourse.getActionUrl();
+		methodName = findMethodName(requestBean.getRequestPath(), actionUrl, methodName);
 		
 		if(methodName == null) {
 			errorDispatcher(response, "action的方法为空");
 			return;
 		}
 
-		Class clazz = object.getClass();
-		setActionField(object, clazz, paramMap);
+		Class clazz = action.getClass();
+		setActionField(action, clazz, paramMap);
 		
-		ExecuteContext excuteContext = new ExecuteContext(actionContext, object);
+		ExecuteContext excuteContext = new ExecuteContext(actionContext, action);
 		
-		ActionHandle actionHandle = new ActionHandle();
+		ActionHandler actionHandle = new ActionHandler();
 		actionHandle.handleAction(excuteContext);
 		
 		String resultValue = null;
 		try {
 			Method method = clazz.getDeclaredMethod(methodName);
-			resultValue = (String) method.invoke(object);
+			resultValue = (String) method.invoke(action);
 		} catch (NoSuchMethodException e) {
 
 			e.printStackTrace();
@@ -120,6 +115,13 @@ public class ActionCommand {
 			return;
 		}
 		
+	}
+
+	private Object createAction()
+			throws IOException {
+		Object object = applicationBeanLoader.getBean(actionSourse.getRefClass());
+		
+		return object;
 	}
 	
 	/**
@@ -250,7 +252,10 @@ public class ActionCommand {
 	 * @param flag
 	 * @param methodName
 	 */
-	private String findMethodName(String url, String actionUrl, boolean flag, String methodName) {
+	private String findMethodName(String url, String actionUrl, String methodName) {
+		//actionUrl是否包含*符号
+		boolean flag = actionUrl.contains("*");
+		
 		if(methodName == null) {
 			if(flag) {
 				methodName = url.replace(url.replace("*", ""), "");
