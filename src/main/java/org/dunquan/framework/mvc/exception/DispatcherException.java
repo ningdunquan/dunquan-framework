@@ -1,4 +1,4 @@
-package org.dunquan.framework.exception;
+package org.dunquan.framework.mvc.exception;
 
 /**
  * dispatcher异常

@@ -1,6 +1,5 @@
 package org.dunquan.framework.loader;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +9,7 @@ import org.dunquan.framework.manager.BeanManager;
 import org.dunquan.framework.manager.XmlBeanManager;
 import org.dunquan.framework.sourse.BeanSourse;
 import org.dunquan.framework.util.BeanUtil;
-import org.dunquan.framework.util.MethodUtil;
+import org.dunquan.framework.util.ReflectionUtil;
 import org.dunquan.framework.util.StringUtil;
 
 public class XmlApplicationBeanLoader implements ApplicationBeanLoader {
@@ -67,7 +66,7 @@ public class XmlApplicationBeanLoader implements ApplicationBeanLoader {
 	 * @return
 	 */
 	private Object getPrototype(BeanSourse beanSourse, Object object) {
-		Class clazz = object.getClass();
+		Class<?> clazz = object.getClass();
 //		Method[] methods = clazz.getDeclaredMethods();
 		Object object2 = null;
 		try {
@@ -117,7 +116,7 @@ public class XmlApplicationBeanLoader implements ApplicationBeanLoader {
 		for (Map.Entry<String, BeanSourse> entry : map.entrySet()) {
 			beanSourse = entry.getValue();
 			className = beanSourse.getClassName();
-			Class clazz = null;
+			Class<?> clazz = null;
 			try {
 				clazz = Class.forName(className);
 			} catch (ClassNotFoundException e) {
@@ -136,7 +135,7 @@ public class XmlApplicationBeanLoader implements ApplicationBeanLoader {
 				String fieldName = fieldEntry.getKey();
 				String fieldValue = fieldEntry.getValue();
 				try {
-					Method method = MethodUtil.getMethod(clazz, fieldName);
+					Method method = ReflectionUtil.getMethod(clazz, fieldName);
 
 					setField(object, fieldValue, method);
 
@@ -172,7 +171,7 @@ public class XmlApplicationBeanLoader implements ApplicationBeanLoader {
 		for (Map.Entry<String, String> refEntry : refMap.entrySet()) {
 			String refName = refEntry.getKey();
 			try {
-				Method method = MethodUtil.getMethod(object.getClass(),
+				Method method = ReflectionUtil.getMethod(object.getClass(),
 						refName);
 
 				method.invoke(object, getBean(refName));
@@ -202,7 +201,7 @@ public class XmlApplicationBeanLoader implements ApplicationBeanLoader {
 			if (!"String".equals(simpleName)) {
 				// 获取形参类型的全类名
 				String realTypeName = StringUtil.getTypeName(simpleName);
-				Class ctype = null;
+				Class<?> ctype = null;
 				try {
 					ctype = Class.forName(realTypeName);
 				} catch (ClassNotFoundException e) {

@@ -12,11 +12,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.dunquan.framework.context.ActionContext;
-import org.dunquan.framework.exception.DispatcherException;
 import org.dunquan.framework.factory.InstanceFactory;
 import org.dunquan.framework.mvc.core.ActionCommand;
 import org.dunquan.framework.mvc.core.ExceptionHandler;
 import org.dunquan.framework.mvc.core.RequestBean;
+import org.dunquan.framework.mvc.exception.DispatcherException;
 import org.dunquan.framework.mvc.handle.BeforePrepareHandle;
 import org.dunquan.framework.mvc.handle.ManagerHandle;
 import org.dunquan.framework.mvc.utils.WebUtils;
@@ -75,7 +75,7 @@ public class DispatcherExcuteServlet extends HttpServlet {
 			
 			actionCommand.execute();
 		} catch (Exception e) {
-			errorDispatcher(request, response, "", e);
+			errorDispatcher(request, response, e.getMessage(), e);
 		}finally {
 			actionContext.destroy();
 		}

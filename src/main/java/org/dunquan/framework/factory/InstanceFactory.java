@@ -3,6 +3,8 @@ package org.dunquan.framework.factory;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.dunquan.framework.mvc.core.ActionHandler;
+import org.dunquan.framework.mvc.core.DefaultActionHandler;
 import org.dunquan.framework.mvc.core.DefaultExceptionHandler;
 import org.dunquan.framework.mvc.core.ExceptionHandler;
 import org.dunquan.framework.util.ReflectionUtil;
@@ -27,7 +29,7 @@ public class InstanceFactory {
     /**
      * HandlerInvoker
      */
-    private static final String HANDLER_INVOKER = "dunquan.framework.custom.handler_invoker";
+    private static final String ACTION_HANDLER = "dunquan.framework.mvc.action_handler";
 
     /**
      * HandlerExceptionResolver
@@ -44,6 +46,10 @@ public class InstanceFactory {
      */
     public static ExceptionHandler getExceptionHandler() {
         return getInstance(HANDLER_EXCEPTION_RESOLVER, DefaultExceptionHandler.class);
+    }
+    
+    public static ActionHandler getActionHandler() {
+    	return getInstance(ACTION_HANDLER, DefaultActionHandler.class);
     }
 
     @SuppressWarnings("unchecked")
