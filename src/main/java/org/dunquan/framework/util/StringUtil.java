@@ -68,8 +68,8 @@ public class StringUtil implements Beanable {
 	 */
 	public static String getStringUpperCase(String str, int begin, int end) {
 		String s = str.substring(begin, end);
-		String filed = str.substring(begin).replaceFirst(s, s.toUpperCase());
-		return filed;
+		String filedName = str.substring(begin).replaceFirst(s, s.toUpperCase());
+		return filedName;
 	}
 
 	/**

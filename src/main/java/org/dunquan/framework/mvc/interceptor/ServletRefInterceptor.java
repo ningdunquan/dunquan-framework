@@ -7,15 +7,15 @@ import org.dunquan.framework.api.HttpSessionAble;
 import org.dunquan.framework.api.RequestAble;
 import org.dunquan.framework.api.ServletContextAble;
 import org.dunquan.framework.api.SessionAble;
-import org.dunquan.framework.context.ActionContext;
-import org.dunquan.framework.context.ExecuteContext;
+import org.dunquan.framework.mvc.context.ActionContext;
+import org.dunquan.framework.mvc.context.ActionInvocation;
 
 public class ServletRefInterceptor extends AbstractInterceptor {
 
 	@Override
-	public void beforeHanlde(ExecuteContext excuteContext) {
-		Object action = excuteContext.getAction();
-		ActionContext actionContext = excuteContext.getActionContext();
+	public void beforeHandle(ActionInvocation actionInvocation) {
+		Object action = actionInvocation.getAction();
+		ActionContext actionContext = actionInvocation.getActionContext();
 		
 		if(action instanceof HttpServletRequestAble) {
 			((HttpServletRequestAble)action).setHttpServletRequest(actionContext.getHttpServletRequest());
@@ -47,7 +47,7 @@ public class ServletRefInterceptor extends AbstractInterceptor {
 	}
 
 	@Override
-	public void afterHanlde(ExecuteContext executeContext) {
+	public void afterHandle(ActionInvocation actionInvocation) {
 		// TODO Auto-generated method stub
 		
 	}

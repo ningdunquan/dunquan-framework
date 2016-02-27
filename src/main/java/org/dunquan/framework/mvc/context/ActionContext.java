@@ -1,4 +1,4 @@
-package org.dunquan.framework.context;
+package org.dunquan.framework.mvc.context;
 
 import java.io.Serializable;
 import java.util.Map;

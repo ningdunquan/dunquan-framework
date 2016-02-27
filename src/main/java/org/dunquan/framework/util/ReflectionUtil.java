@@ -23,6 +23,19 @@ public class ReflectionUtil {
 		
 		return instance;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T newInstance(Class<?> clazz) {
+		T instance;
+		
+		try {
+			instance = (T)clazz.newInstance();
+		} catch (Exception e) {
+            throw new RuntimeException(e);
+		}
+		
+		return instance;
+	}
 
 	private static Class<?> loadClass(String name) {
 		Class<?> c;
@@ -41,15 +54,29 @@ public class ReflectionUtil {
 	}
 
 	
-	public static Method getMethod(Class<?> clazz, String fieldName) {
+	public static Method getSetterMethod(Class<?> clazz, String fieldName) {
 		Method method = null;
 		try {
 			method = MethodUtil.getMethodByGetSet(clazz, fieldName);
 		} catch (NoSuchMethodException e) {
-			
 		}
 		
-		if(method != null && isNonMethodAccessable(method)) {
+		if(method != null && isNonMemberAccessable(method)) {
+			method.setAccessible(true);
+		}
+		
+		return method;
+	}
+	
+
+	public static Method getGetterMethod(Class<?> clazz, String actionField) {
+		Method method = null;
+		try {
+			method = MethodUtil.getGetterMethod(clazz, actionField);
+		} catch (NoSuchMethodException e) {
+		}
+		
+		if(method != null && isNonMemberAccessable(method)) {
 			method.setAccessible(true);
 		}
 		
@@ -58,14 +85,7 @@ public class ReflectionUtil {
 
 	public static void injectField(Object action, String name, String value) throws IllegalArgumentException, IllegalAccessException {
 		//获取属性
-		Field field = findField(action.getClass(), name);
-		if(field == null) {
-			return;
-		}
-		
-		if(isNonMethodAccessable(field)) {
-			field.setAccessible(true);
-		}
+		Field field = getField(action, name);
 		
 		Object arg = getFiledValue(value, field);
 		
@@ -97,7 +117,16 @@ public class ReflectionUtil {
 		return arg;
 	}
 
-	private static Field findField(Class<?> clazz, String name) {
+	public static Field getField(Object action, String name) {
+		Field field = findField(action.getClass(), name);
+
+		if(field != null && isNonMemberAccessable(field)) {
+			field.setAccessible(true);
+		}
+		return field;
+	}
+	
+	public static Field findField(Class<?> clazz, String name) {
 		Field field = null;
 		
 		try {
@@ -116,7 +145,7 @@ public class ReflectionUtil {
 		return field;
 	}
 	
-	private static boolean isNonMethodAccessable(Member member) {
+	private static boolean isNonMemberAccessable(Member member) {
 		return member.getModifiers() != 1;
 	}
 	
@@ -135,4 +164,19 @@ public class ReflectionUtil {
 		Field field = superClass.getField(name);
 		return field;
 	}
+
+	public static Method getMethod(Class<?> clazz, String methodName) {
+		Method method = null;
+		try {
+			method = MethodUtil.getMethod(clazz, methodName);
+		} catch (NoSuchMethodException e) {
+		}
+		
+		if(method != null && isNonMemberAccessable(method)) {
+			method.setAccessible(true);
+		}
+		
+		return method;
+	}
+
 }

@@ -1,28 +1,14 @@
 package org.dunquan.framework.mvc.core;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.dunquan.framework.context.ActionContext;
-import org.dunquan.framework.context.ExecuteContext;
-import org.dunquan.framework.exception.MyException;
 import org.dunquan.framework.factory.InstanceFactory;
 import org.dunquan.framework.loader.ApplicationBeanLoader;
+import org.dunquan.framework.mvc.context.ActionContext;
+import org.dunquan.framework.mvc.context.DefaultExecuteContext;
+import org.dunquan.framework.mvc.context.ExecuteContext;
 import org.dunquan.framework.mvc.exception.DispatcherException;
 import org.dunquan.framework.sourse.ActionSourse;
-import org.dunquan.framework.sourse.Result;
-import org.dunquan.framework.util.BeanUtil;
-import org.dunquan.framework.util.MethodUtil;
-import org.dunquan.framework.util.StringUtil;
 
 public class ActionCommand {
 
@@ -43,9 +29,6 @@ public class ActionCommand {
 	
 	public void execute() throws Exception {
 
-		HttpServletRequest request = actionContext.getHttpServletRequest();
-		HttpServletResponse response = actionContext.getHttpServletResponse();
-		
 		Object action = createAction();
 		
 		if(action == null) {
@@ -60,86 +43,21 @@ public class ActionCommand {
 		if(methodName == null) {
 			throw new DispatcherException("no action method");
 		}
-
-		Class<?> clazz = action.getClass();
-		Map<String, String> paramMap = new ConcurrentHashMap<String, String>();
-//		getAllDispatcherParameter(paramMap, request);
-//		setActionField(action, clazz, paramMap);
 		
-		ExecuteContext excuteContext = new ExecuteContext(actionContext, action);
+		ExecuteContext excuteContext = new DefaultExecuteContext(actionContext, action , actionSourse);
 		
 		ActionHandler actionHandle = InstanceFactory.getActionHandler();
 		actionHandle.handleAction(excuteContext);
-		
-		String resultValue = null;
-		try {
-			Method method = clazz.getDeclaredMethod(methodName);
-			resultValue = (String) method.invoke(action);
-		} catch (NoSuchMethodException e) {
 
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			
-			e.printStackTrace();
-		}
-		
-		if(resultValue == null) {
-			throw new DispatcherException("no action result value");
-		}
-		
-		Result result = findResult(actionSourse, resultValue);
-
-		if(result == null) {
-			throw new DispatcherException("no action result");
-		}
-		
-		if(Result.RE_REDIRECT.equals(result.getType())) {
-			response.sendRedirect(result.getResultValue());
-			return;
-		}
-		
-		if(Result.RE_DISPATCHER.equals(result.getType())) {
-			request.getRequestDispatcher(result.getResultValue()).forward(request, response);
-			return;
-		}
-		
 	}
 
-	private Object createAction()
-			throws IOException {
+	private Object createAction() throws IOException {
 		Object object = applicationBeanLoader.getBean(actionSourse.getRefClass());
 		
 		return object;
 	}
 	
 	
-	/**
-	 * 寻找result对象
-	 * @param actionSourse
-	 * @param resultValue
-	 * @return
-	 */
-	private Result findResult(ActionSourse actionSourse, String resultValue) {
-		String resultName = null;
-		for(Result result : actionSourse.getResults()) {
-			resultName = result.getResultName();
-			if(resultValue.equals(resultName)) {
-				return result;
-			}
-		}
-		return null;
-	}
-
-
 	/**
 	 * 寻找action的methodName
 	 * @param url

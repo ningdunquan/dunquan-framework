@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>dunquan.ning</groupId>
 	<artifactId>com.dunquan.framework</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>dunquan-framework</name>
 
 	<dependencies>

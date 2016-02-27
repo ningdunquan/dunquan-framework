@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.dunquan.framework.context.ActionContext;
+import org.dunquan.framework.mvc.context.ActionContext;
 import org.dunquan.framework.wrapmap.ApplicationMap;
 import org.dunquan.framework.wrapmap.RequestMap;
 import org.dunquan.framework.wrapmap.SessionMap;

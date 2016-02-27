@@ -135,7 +135,7 @@ public class XmlApplicationBeanLoader implements ApplicationBeanLoader {
 				String fieldName = fieldEntry.getKey();
 				String fieldValue = fieldEntry.getValue();
 				try {
-					Method method = ReflectionUtil.getMethod(clazz, fieldName);
+					Method method = ReflectionUtil.getSetterMethod(clazz, fieldName);
 
 					setField(object, fieldValue, method);
 
@@ -171,7 +171,7 @@ public class XmlApplicationBeanLoader implements ApplicationBeanLoader {
 		for (Map.Entry<String, String> refEntry : refMap.entrySet()) {
 			String refName = refEntry.getKey();
 			try {
-				Method method = ReflectionUtil.getMethod(object.getClass(),
+				Method method = ReflectionUtil.getSetterMethod(object.getClass(),
 						refName);
 
 				method.invoke(object, getBean(refName));

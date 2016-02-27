@@ -1,5 +1,7 @@
 package org.dunquan.framework.mvc.interceptor;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.Map;
@@ -7,7 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.dunquan.framework.context.ExecuteContext;
+import org.dunquan.framework.mvc.constant.MvcConstant;
+import org.dunquan.framework.mvc.context.ActionInvocation;
 import org.dunquan.framework.mvc.exception.ValidateException;
 import org.dunquan.framework.util.BeanUtil;
 import org.dunquan.framework.util.ReflectionUtil;
@@ -16,21 +19,20 @@ import org.dunquan.framework.util.StringUtil;
 public class DataValidateInterceptor extends AbstractInterceptor {
 
 	@Override
-	public void beforeHanlde(ExecuteContext excuteContext)
+	public void beforeHandle(ActionInvocation actionInvocation)
 			throws ValidateException {
-		HttpServletRequest request = excuteContext.getActionContext()
+		HttpServletRequest request = actionInvocation.getActionContext()
 				.getHttpServletRequest();
 
-		Object action = excuteContext.getAction();
+		Object action = actionInvocation.getAction();
 
 		Map<String, String> paramMap = getAllDispatcherParameter(request);
-		Class<?> clazz = action.getClass();
-		setActionField(action, clazz, paramMap);
+		setActionField(action, paramMap);
 
 	}
 
 	@Override
-	public void afterHanlde(ExecuteContext executeContext)
+	public void afterHandle(ActionInvocation actionInvocation)
 			throws ValidateException {
 
 	}
@@ -63,16 +65,17 @@ public class DataValidateInterceptor extends AbstractInterceptor {
 	 * @param object
 	 * @param paramMap2
 	 */
-	private void setActionField(Object action, Class<?> clazz,
-			Map<String, String> paramMap) {
+	private void setActionField(Object action, Map<String, String> paramMap) {
+		Class<?> clazz = action.getClass();
+		
 		String name = null;
 		for (Map.Entry<String, String> entry : paramMap.entrySet()) {
 			name = entry.getKey();
 			Method method = null;
 			// 如果是action中直接的属性
-			if (!name.contains(".")) {
+			if (!name.contains(MvcConstant.POINT)) {
 				try {
-					method = ReflectionUtil.getMethod(clazz, name);
+					method = ReflectionUtil.getSetterMethod(clazz, name);
 					if (method != null) {
 						setFieldByMethod(action, entry.getValue(), method);
 					} else {
@@ -83,20 +86,52 @@ public class DataValidateInterceptor extends AbstractInterceptor {
 				}
 
 			} else {
-				String[] arr = name.split("\\.");
+				//暂时默认只能两层向action注入属性
+				String[] arr = name.split(MvcConstant.REGEX_POINT);
 
+				if(arr.length > 2) {
+					return;
+				}
 				Method fieldMethod;
-				Object objField;
+				Object actionFieldObj = null;
 				try {
-					fieldMethod = clazz.getDeclaredMethod("get"
-							+ StringUtil.getStringFieldUpperCase(arr[0]));
+					//example: user.name
+					//but user不一定有setter，getter方法
+					//ps：向user中注入属性时候需要新建user，并把user给action
+					
+					//当前action的属性，如：user
+					String actionFieldName = arr[0];
+					//action属性的属性，如：user中的name
+					String innerFieldName = arr[1];
+					
+					Method fieldGetterMethod = getFieldGetterMethod(clazz, actionFieldName);
+					
+					if(fieldGetterMethod == null) {
+						Field actionField = getActionField(clazz, actionFieldName);
+						
+						if(actionField != null)
+							actionFieldObj = actionField.get(action);
+					}else {
+						actionFieldObj = fieldGetterMethod.invoke(action);
+					}
+					
+					
+					if(actionFieldObj == null) {
+						Field actionField = getActionField(clazz, actionFieldName);
+						
+						if(actionField != null) {
+							Class<?> actionFieldClass = actionField.getType();
+							
+							actionFieldObj = ReflectionUtil.newInstance(actionFieldClass);
+							
+							//注入属性
+							injectField(action, actionField, actionFieldName, actionFieldObj);
+						}
+					}
 
-					objField = fieldMethod.invoke(action);
+					fieldMethod = ReflectionUtil.getSetterMethod(actionFieldObj.getClass(), innerFieldName);
 
-					fieldMethod = ReflectionUtil.getMethod(objField.getClass(),
-							arr[1]);
-
-					setFieldByMethod(objField, entry.getValue(), fieldMethod);
+					setFieldByMethod(actionFieldObj, entry.getValue(), fieldMethod);
 
 				} catch (Exception e) {
 					throw new ValidateException("validate data error");
@@ -105,6 +140,55 @@ public class DataValidateInterceptor extends AbstractInterceptor {
 				// 这里可能还要添加方法
 			}
 		}
+	}
+
+	/**
+	 * 给action注入属性
+	 * @param action
+	 * @param actionField
+	 * @param actionFieldName
+	 * @param actionFieldObj
+	 * @throws Exception
+	 */
+	private void injectField(Object action, Field actionField, 
+			String actionFieldName, Object actionFieldObj) throws Exception {
+		Class<?> clazz = action.getClass();
+		Method method = ReflectionUtil.getSetterMethod(clazz, actionFieldName);
+		if(method != null) {
+			method.invoke(action, actionFieldObj);
+		}else {
+			actionField.set(action, actionFieldObj);
+		}
+		
+	}
+
+	/**
+	 * 根据name获取属性
+	 * @param clazz
+	 * @param actionFieldName
+	 * @return
+	 */
+	private Field getActionField(Class<?> clazz, String actionFieldName) {
+		Field field = null;
+		
+		field = ReflectionUtil.getField(clazz, actionFieldName);
+		
+		return field;
+	}
+
+
+	/**
+	 * 获取action属性的getter方法
+	 * @param clazz
+	 * @param actionField
+	 * @return
+	 */
+	private Method getFieldGetterMethod(Class<?> clazz, String actionField) {
+		Method fieldGetterMethod = null;
+		
+		fieldGetterMethod = ReflectionUtil.getGetterMethod(clazz, actionField);
+		
+		return fieldGetterMethod;
 	}
 
 	/**
@@ -131,28 +215,41 @@ public class DataValidateInterceptor extends AbstractInterceptor {
 	private void setFieldByMethod(Object object, String fieldValue,
 			Method method) {
 		try {
-			Object arg = null;
-			String simpleName = method.getParameterTypes()[0].getSimpleName();
-			arg = fieldValue;
-			// 获取getter方法的形参的类型
-			if (!"String".equals(simpleName)) {
-				// 获取形参类型的全类名
-				String realTypeName = StringUtil.getTypeName(simpleName);
-				Class<?> ctype = null;
-				try {
-					ctype = Class.forName(realTypeName);
-				} catch (ClassNotFoundException e) {
-					throw new ValidateException("类型转换异常");
-				}
-
-				arg = BeanUtil.getArg(fieldValue, simpleName, ctype);
-			}
+			Object arg = resolveFieldValue(fieldValue, method);
 
 			method.invoke(object, arg);
 
 		} catch (Exception e) {
-			throw new ValidateException("方法异常");
+			throw new ValidateException("method error");
 		}
+	}
+
+	/**
+	 * 解析属性的值
+	 * @param fieldValue
+	 * @param method
+	 * @return
+	 * @throws IllegalAccessException
+	 * @throws InvocationTargetException
+	 */
+	private Object resolveFieldValue(String fieldValue, Method method)
+			throws IllegalAccessException, InvocationTargetException {
+		Object arg = fieldValue;
+		String simpleName = method.getParameterTypes()[0].getSimpleName();
+		// 获取getter方法的形参的类型
+		if (!"String".equals(simpleName)) {
+			// 获取形参类型的全类名
+			String realTypeName = StringUtil.getTypeName(simpleName);
+			Class<?> ctype = null;
+			try {
+				ctype = Class.forName(realTypeName);
+			} catch (ClassNotFoundException e) {
+				throw new ValidateException("类型转换异常");
+			}
+
+			arg = BeanUtil.getArg(fieldValue, simpleName, ctype);
+		}
+		return arg;
 	}
 
 }

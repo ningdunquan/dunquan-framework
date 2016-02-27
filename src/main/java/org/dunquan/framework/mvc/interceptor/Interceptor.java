@@ -1,10 +1,10 @@
 package org.dunquan.framework.mvc.interceptor;
 
-import org.dunquan.framework.context.ExecuteContext;
+import org.dunquan.framework.mvc.context.ActionInvocation;
 
 public interface Interceptor {
 
-	public void beforeHanlde(ExecuteContext excuteContext) throws Exception;
+	public void beforeHandle(ActionInvocation actionInvocation) throws Exception;
 	
-	public void afterHanlde(ExecuteContext executeContext) throws Exception;
+	public void afterHandle(ActionInvocation actionInvocation) throws Exception;
 }

@@ -1,6 +1,6 @@
 package org.dunquan.framework.mvc.core;
 
-import org.dunquan.framework.context.ExecuteContext;
+import org.dunquan.framework.mvc.context.ExecuteContext;
 
 public interface ActionHandler {
 
