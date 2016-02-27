@@ -54,7 +54,7 @@ public class BeforePrepareHandle {
 			HttpServletResponse response) {
 		ServletContext servletContext = request.getServletContext();
 
-		HttpSession session = request.getSession(false);
+		HttpSession session = request.getSession();
 
 		return initContextMap(request, response, session, servletContext);
 	}
