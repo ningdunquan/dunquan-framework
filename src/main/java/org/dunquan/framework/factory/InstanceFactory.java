@@ -7,6 +7,8 @@ import org.dunquan.framework.mvc.core.ActionHandler;
 import org.dunquan.framework.mvc.core.DefaultActionHandler;
 import org.dunquan.framework.mvc.core.DefaultExceptionHandler;
 import org.dunquan.framework.mvc.core.ExceptionHandler;
+import org.dunquan.framework.mvc.view.DefaultViewResolver;
+import org.dunquan.framework.mvc.view.ViewResolver;
 import org.dunquan.framework.util.ReflectionUtil;
 
 
@@ -39,7 +41,7 @@ public class InstanceFactory {
     /**
      * ViewResolver
      */
-    private static final String VIEW_RESOLVER = "dunquan.framework.custom.view_resolver";
+    private static final String VIEW_RESOLVER = "dunquan.framework.mvc.view_resolver";
 
     /**
      * 获取 HandlerExceptionResolver
@@ -48,9 +50,21 @@ public class InstanceFactory {
         return getInstance(HANDLER_EXCEPTION_RESOLVER, DefaultExceptionHandler.class);
     }
     
+    /**
+     * 获取actionHandler
+     * @return
+     */
     public static ActionHandler getActionHandler() {
     	return getInstance(ACTION_HANDLER, DefaultActionHandler.class);
     }
+    
+    /**
+     * 获取ViewResolver视图解析器
+     * @return
+     */
+    public static ViewResolver getViewResolver() {
+		return getInstance(VIEW_RESOLVER, DefaultViewResolver.class);
+	}
 
     @SuppressWarnings("unchecked")
     public synchronized static <T> T getInstance(String cacheKey, Class<T> defaultImplClass) {
@@ -69,4 +83,5 @@ public class InstanceFactory {
         // 返回该实例
         return instance;
     }
+
 }

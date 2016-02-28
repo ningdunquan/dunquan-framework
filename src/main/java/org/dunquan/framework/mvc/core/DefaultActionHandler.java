@@ -8,6 +8,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.dunquan.framework.factory.InstanceFactory;
 import org.dunquan.framework.mvc.context.ActionContext;
 import org.dunquan.framework.mvc.context.ActionInvocation;
 import org.dunquan.framework.mvc.context.ExecuteContext;
@@ -15,6 +16,8 @@ import org.dunquan.framework.mvc.exception.DispatcherException;
 import org.dunquan.framework.mvc.interceptor.DataValidateInterceptor;
 import org.dunquan.framework.mvc.interceptor.Interceptor;
 import org.dunquan.framework.mvc.interceptor.ServletRefInterceptor;
+import org.dunquan.framework.mvc.view.LogicView;
+import org.dunquan.framework.mvc.view.ViewResolver;
 import org.dunquan.framework.sourse.ActionSourse;
 import org.dunquan.framework.sourse.Result;
 import org.dunquan.framework.util.ReflectionUtil;
@@ -22,6 +25,7 @@ import org.dunquan.framework.util.ReflectionUtil;
 public class DefaultActionHandler implements ActionHandler {
 
 	private static List<Interceptor> handlers = new CopyOnWriteArrayList<Interceptor>();
+	private ViewResolver viewResolver = InstanceFactory.getViewResolver();
 	
 	static{
 		handlers.add(new ServletRefInterceptor());
@@ -61,35 +65,62 @@ public class DefaultActionHandler implements ActionHandler {
 		HttpServletRequest request = actionContext.getHttpServletRequest();
 		HttpServletResponse response = actionContext.getHttpServletResponse();
 		
-		Object resultValue = execute(action, methodName);
+		Object actionValue = execute(action, methodName);
 		
-		if(resultValue == null) {
+		if(actionValue == null) {
 			throw new DispatcherException("no action result value");
 		}
 		
-		Result result = findResult(actionSourse, (String)resultValue);
+		
+		
+		if(actionValue instanceof LogicView) {
+			
+		}else if(actionValue instanceof Result) {
+			
+		}else if(actionValue instanceof String) {
+			String value = (String) actionValue;
+			Result result = findResult(actionSourse, value);
+			
+			if(result == null) {
+				throw new DispatcherException("no action result");
+			}
+			
+			if(Result.RE_ACTION.equalsIgnoreCase(result.getType())) {
+				actionSourse.setActionMethod(value);
+				
+				execute(executeContext);
+				
+				return;
+			}
+			
+			
+			
+			if(Result.RE_REDIRECT.equalsIgnoreCase(result.getType())) {
+				try {
+					response.sendRedirect(result.getResultValue());
+				} catch (IOException e) {
+					throw new DispatcherException("redirect error");
+				}
+				return;
+			}
+			
+			if(Result.RE_DISPATCHER.equalsIgnoreCase(result.getType())) {
+				try {
+					request.getRequestDispatcher(result.getResultValue()).forward(request, response);
+				} catch (Exception e) {
+					throw new DispatcherException("forward error");
+				}
+				return;
+			}
+			
+			
+		}else {
+			return;
+		}
+		
+		
+		
 
-		if(result == null) {
-			throw new DispatcherException("no action result");
-		}
-		
-		if(Result.RE_REDIRECT.equals(result.getType())) {
-			try {
-				response.sendRedirect(result.getResultValue());
-			} catch (IOException e) {
-				throw new DispatcherException("redirect error");
-			}
-			return;
-		}
-		
-		if(Result.RE_DISPATCHER.equals(result.getType())) {
-			try {
-				request.getRequestDispatcher(result.getResultValue()).forward(request, response);
-			} catch (Exception e) {
-				throw new DispatcherException("forward error");
-			}
-			return;
-		}
 		
 	}
 
@@ -111,11 +142,11 @@ public class DefaultActionHandler implements ActionHandler {
 	 * @param resultValue
 	 * @return
 	 */
-	private Result findResult(ActionSourse actionSourse, String resultValue) {
+	private Result findResult(ActionSourse actionSourse, String actionValue) {
 		String resultName = null;
 		for(Result result : actionSourse.getResults()) {
 			resultName = result.getResultName();
-			if(resultValue.equals(resultName)) {
+			if(actionValue.equals(resultName)) {
 				return result;
 			}
 		}

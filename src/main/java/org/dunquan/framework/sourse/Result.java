@@ -7,8 +7,25 @@ package org.dunquan.framework.sourse;
  */
 public class Result {
 	
+	/**
+	 * 重定向
+	 */
 	public static final String RE_REDIRECT = "redirect";
+	
+	/**
+	 * 转发
+	 */
 	public static final String RE_DISPATCHER = "dispatcher";
+	
+	/**
+	 * ajax请求
+	 */
+	public static final String RE_AJAX = "ajax";
+	
+	/**
+	 * 转发到另一个action处理
+	 */
+	public static final String RE_ACTION = "action";
 
 	private String resultName;
 	private String type;

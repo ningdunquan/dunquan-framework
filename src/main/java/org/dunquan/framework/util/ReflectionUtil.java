@@ -87,6 +87,10 @@ public class ReflectionUtil {
 		//获取属性
 		Field field = getField(action, name);
 		
+		if(field == null) {
+			return;
+		}
+		
 		Object arg = getFiledValue(value, field);
 		
 		field.set(action, arg);
