@@ -12,7 +12,6 @@ public class LogicView {
 	        this.path = path;
 	        data = new HashMap<String, Object>();
 	    }
-
 	    public LogicView(String path, Map<String, Object> data) {
 	    	this.path = path;
 	    	this.data = data;
@@ -22,13 +21,6 @@ public class LogicView {
 	    	this.data = new HashMap<String, Object>();
 	        data.put(key, value);
 	        return this;
-	    }
-
-	    public boolean isRedirect() {
-	    	if(path == null) {
-	    		return false;
-	    	}
-	        return path.startsWith("/");
 	    }
 
 	    public String getPath() {

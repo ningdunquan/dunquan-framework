@@ -1,25 +1,19 @@
 package org.dunquan.framework.mvc.core;
 
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.dunquan.framework.factory.InstanceFactory;
-import org.dunquan.framework.mvc.context.ActionContext;
 import org.dunquan.framework.mvc.context.ActionInvocation;
 import org.dunquan.framework.mvc.context.ExecuteContext;
 import org.dunquan.framework.mvc.exception.DispatcherException;
 import org.dunquan.framework.mvc.interceptor.DataValidateInterceptor;
 import org.dunquan.framework.mvc.interceptor.Interceptor;
 import org.dunquan.framework.mvc.interceptor.ServletRefInterceptor;
-import org.dunquan.framework.mvc.view.LogicView;
 import org.dunquan.framework.mvc.view.ViewResolver;
 import org.dunquan.framework.sourse.ActionSourse;
-import org.dunquan.framework.sourse.Result;
 import org.dunquan.framework.util.ReflectionUtil;
 
 public class DefaultActionHandler implements ActionHandler {
@@ -51,7 +45,7 @@ public class DefaultActionHandler implements ActionHandler {
 		
 	}
 
-	private void execute(ExecuteContext executeContext) throws DispatcherException {
+	public void execute(ExecuteContext executeContext) throws DispatcherException {
 
 		ActionSourse actionSourse = executeContext.getActionSourse();
 		ActionInvocation actionInvocation = executeContext.getActionInvocation();
@@ -59,11 +53,7 @@ public class DefaultActionHandler implements ActionHandler {
 			return;
 		}
 		Object action = actionInvocation.getAction();
-		ActionContext actionContext = actionInvocation.getActionContext();
 		String methodName = actionSourse.getActionMethod();
-		
-		HttpServletRequest request = actionContext.getHttpServletRequest();
-		HttpServletResponse response = actionContext.getHttpServletResponse();
 		
 		Object actionValue = execute(action, methodName);
 		
@@ -71,58 +61,11 @@ public class DefaultActionHandler implements ActionHandler {
 			throw new DispatcherException("no action result value");
 		}
 		
-		
-		
-		if(actionValue instanceof LogicView) {
-			
-		}else if(actionValue instanceof Result) {
-			
-		}else if(actionValue instanceof String) {
-			String value = (String) actionValue;
-			Result result = findResult(actionSourse, value);
-			
-			if(result == null) {
-				throw new DispatcherException("no action result");
-			}
-			
-			if(Result.RE_ACTION.equalsIgnoreCase(result.getType())) {
-				actionSourse.setActionMethod(value);
-				
-				execute(executeContext);
-				
-				return;
-			}
-			
-			
-			
-			if(Result.RE_REDIRECT.equalsIgnoreCase(result.getType())) {
-				try {
-					response.sendRedirect(result.getResultValue());
-				} catch (IOException e) {
-					throw new DispatcherException("redirect error");
-				}
-				return;
-			}
-			
-			if(Result.RE_DISPATCHER.equalsIgnoreCase(result.getType())) {
-				try {
-					request.getRequestDispatcher(result.getResultValue()).forward(request, response);
-				} catch (Exception e) {
-					throw new DispatcherException("forward error");
-				}
-				return;
-			}
-			
-			
-		}else {
-			return;
-		}
-		
-		
-		
-
+		//解析视图
+		viewResolver.resolve(executeContext, actionValue, this);
 		
 	}
+
 
 	private Object execute(Object action, String methodName) throws DispatcherException {
 		Class<?> clazz = action.getClass();
@@ -136,20 +79,5 @@ public class DefaultActionHandler implements ActionHandler {
 		return resultValue;
 	}
 	
-	/**
-	 * 寻找result对象
-	 * @param actionSourse
-	 * @param resultValue
-	 * @return
-	 */
-	private Result findResult(ActionSourse actionSourse, String actionValue) {
-		String resultName = null;
-		for(Result result : actionSourse.getResults()) {
-			resultName = result.getResultName();
-			if(actionValue.equals(resultName)) {
-				return result;
-			}
-		}
-		return null;
-	}
+	
 }

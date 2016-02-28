@@ -1,9 +1,14 @@
 package org.dunquan.framework.mvc.utils;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.dunquan.framework.mvc.core.RequestBean;
+import org.dunquan.framework.mvc.exception.DispatcherException;
+import org.dunquan.framework.util.JsonUtil;
 
 
 public class WebUtils {
@@ -35,4 +40,55 @@ public class WebUtils {
             throw new RuntimeException(e);
         }
     }
+
+	public static void writeJSON(HttpServletResponse response, Object value) {
+		response.setContentType("text/javascript; charset=UTF-8");
+		String json;
+		if(value instanceof String) {
+			json = (String)value;
+		}else {
+			json = JsonUtil.toJSON(value);
+		}
+		PrintWriter writer;
+		try {
+			writer = response.getWriter();
+			//写入json数据
+			writer.write(json);
+			
+			writer.flush();
+			writer.close();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * 重定向 页面
+	 * @param response
+	 * @param path
+	 * @throws DispatcherException 
+	 */
+	public static void sendRedirect(HttpServletResponse response, String path) throws DispatcherException {
+		try {
+			response.sendRedirect(path);
+		} catch (IOException e) {
+			throw new DispatcherException("redirect error");
+		}
+	}
+
+	/**
+	 * 页面转发
+	 * @param request
+	 * @param response
+	 * @param path
+	 * @throws DispatcherException
+	 */
+	public static void forwardDispatcher(HttpServletRequest request,
+			HttpServletResponse response, String path) throws DispatcherException {
+		try {
+			request.getRequestDispatcher(path).forward(request, response);
+		} catch (Exception e) {
+			throw new DispatcherException("forward error", e);
+		}
+	}
 }

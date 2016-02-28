@@ -8,6 +8,10 @@ import org.dunquan.framework.mvc.core.DefaultActionHandler;
 import org.dunquan.framework.mvc.core.DefaultExceptionHandler;
 import org.dunquan.framework.mvc.core.ExceptionHandler;
 import org.dunquan.framework.mvc.view.DefaultViewResolver;
+import org.dunquan.framework.mvc.view.FreeMarkerViewManager;
+import org.dunquan.framework.mvc.view.JspViewManager;
+import org.dunquan.framework.mvc.view.VelocityViewManager;
+import org.dunquan.framework.mvc.view.ViewManager;
 import org.dunquan.framework.mvc.view.ViewResolver;
 import org.dunquan.framework.util.ReflectionUtil;
 
@@ -44,6 +48,21 @@ public class InstanceFactory {
     private static final String VIEW_RESOLVER = "dunquan.framework.mvc.view_resolver";
 
     /**
+     * freemarker视图管理器
+     */
+    private static final String FREEMARKER_VIEW_MANAGER = "dunquan.framework.mvc.freemarker_view_manager";
+
+    /**
+     * jsp视图管理器
+     */
+    private static final String JSP_VIEW_MANAGER = "dunquan.framework.mvc.jsp_view_manager";
+
+    /**
+     * velocity视图管理器
+     */
+    private static final String VELOCITY_VIEW_MANAGER = "dunquan.framework.mvc.velocity_view_manager";
+    
+    /**
      * 获取 HandlerExceptionResolver
      */
     public static ExceptionHandler getExceptionHandler() {
@@ -65,6 +84,30 @@ public class InstanceFactory {
     public static ViewResolver getViewResolver() {
 		return getInstance(VIEW_RESOLVER, DefaultViewResolver.class);
 	}
+    
+    /**
+     * 获取freemarker视图管理器
+     * @return
+     */
+    public static ViewManager getFreeMarkerViewManager() {
+    	return getInstance(FREEMARKER_VIEW_MANAGER, FreeMarkerViewManager.class);
+    }
+    
+    /**
+     * 获取jsp视图管理器
+     * @return
+     */
+    public static ViewManager getJspViewManager() {
+    	return getInstance(JSP_VIEW_MANAGER, JspViewManager.class);
+    }
+    
+    /**
+     * 获取velocity视图管理器
+     * @return
+     */
+    public static ViewManager getVelocityViewManager() {
+    	return getInstance(VELOCITY_VIEW_MANAGER, VelocityViewManager.class);
+    }
 
     @SuppressWarnings("unchecked")
     public synchronized static <T> T getInstance(String cacheKey, Class<T> defaultImplClass) {

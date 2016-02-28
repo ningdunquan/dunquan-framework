@@ -7,6 +7,7 @@ public class ActionSourse {
 	private String refClass;
 	private String actionMethod;
 	private List<Result> results;
+	private List<String> out;
 	
 	public ActionSourse() {
 		super();
@@ -20,6 +21,12 @@ public class ActionSourse {
 		this.results = results;
 	}
 	
+	public List<String> getOut() {
+		return out;
+	}
+	public void setOut(List<String> out) {
+		this.out = out;
+	}
 	public String getActionUrl() {
 		return actionUrl;
 	}

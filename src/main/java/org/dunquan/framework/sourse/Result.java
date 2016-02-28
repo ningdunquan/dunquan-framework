@@ -23,6 +23,11 @@ public class Result {
 	public static final String RE_AJAX = "ajax";
 	
 	/**
+	 * ajax请求返回json数据
+	 */
+	public static final String RE_JSON = "json";
+	
+	/**
 	 * 转发到另一个action处理
 	 */
 	public static final String RE_ACTION = "action";
