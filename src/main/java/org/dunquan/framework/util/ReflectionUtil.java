@@ -130,6 +130,15 @@ public class ReflectionUtil {
 		return field;
 	}
 	
+	public static Field getField(Class<?> clazz, String name) {
+		Field field = findField(clazz, name);
+
+		if(field != null && isNonMemberAccessable(field)) {
+			field.setAccessible(true);
+		}
+		return field;
+	}
+	
 	public static Field findField(Class<?> clazz, String name) {
 		Field field = null;
 		
