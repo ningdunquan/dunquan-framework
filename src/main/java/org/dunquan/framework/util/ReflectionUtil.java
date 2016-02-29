@@ -183,4 +183,38 @@ public class ReflectionUtil {
 		return method;
 	}
 
+	/**
+	 * 执行方法
+	 * @param action
+	 * @param method
+	 * @param value
+	 */
+	public static void invoke(Object action, Method method, Object value) {
+
+		try {
+			method.invoke(action, value);
+		} catch (Exception e) {
+			throw new RuntimeException("method invoke error", e);
+		}
+	}
+
+	/**
+	 * 设置field参数
+	 * @param action
+	 * @param field
+	 * @param value
+	 */
+	public static void setField(Object action, Field field,
+			Object value) {
+		if(isNonMemberAccessable(field)) {
+			field.setAccessible(true);
+		}
+		
+		try {
+			field.set(action, value);
+		} catch (Exception e) {
+			throw new RuntimeException("field set error", e);
+		}
+	}
+
 }

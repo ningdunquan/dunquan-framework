@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -16,7 +17,6 @@ import org.dunquan.framework.mvc.context.ActionContext;
 import org.dunquan.framework.mvc.core.ActionCommand;
 import org.dunquan.framework.mvc.core.ExceptionHandler;
 import org.dunquan.framework.mvc.core.RequestBean;
-import org.dunquan.framework.mvc.exception.DispatcherException;
 import org.dunquan.framework.mvc.handle.BeforePrepareHandle;
 import org.dunquan.framework.mvc.handle.ManagerHandle;
 import org.dunquan.framework.mvc.utils.WebUtils;
@@ -44,8 +44,9 @@ public class DispatcherExcuteServlet extends HttpServlet {
 	 * 初始化servlet
 	 */
 	public void init(ServletConfig config) throws ServletException {
-		
-		prepareHandle = new BeforePrepareHandle();
+		ServletContext servletContext = config.getServletContext();
+
+		prepareHandle = new BeforePrepareHandle(servletContext);
 		managerHandle = new ManagerHandle();
 		exceptionHandler = InstanceFactory.getExceptionHandler();
 	}

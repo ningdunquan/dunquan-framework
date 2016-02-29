@@ -9,12 +9,16 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.dunquan.framework.mvc.context.ActionContext;
+import org.dunquan.framework.mvc.upload.UploadHelper;
 import org.dunquan.framework.wrapmap.ApplicationMap;
 import org.dunquan.framework.wrapmap.RequestMap;
 import org.dunquan.framework.wrapmap.SessionMap;
 
 public class BeforePrepareHandle {
 
+	public BeforePrepareHandle(ServletContext servletContext) {
+		UploadHelper.init(servletContext);
+	}
 	/**
 	 * 新建actionContext对象
 	 * 

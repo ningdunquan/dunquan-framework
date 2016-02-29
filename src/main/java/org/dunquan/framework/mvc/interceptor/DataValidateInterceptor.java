@@ -65,12 +65,15 @@ public class DataValidateInterceptor extends AbstractInterceptor {
 	 * @param object
 	 * @param paramMap2
 	 */
-	private void setActionField(Object action, Map<String, String> paramMap) {
+	protected void setActionField(Object action, Map<String, String> paramMap) {
 		Class<?> clazz = action.getClass();
 		
 		String name = null;
 		for (Map.Entry<String, String> entry : paramMap.entrySet()) {
 			name = entry.getKey();
+			if(name == null) {
+				continue;
+			}
 			Method method = null;
 			// 如果是action中直接的属性
 			if (!name.contains(MvcConstant.POINT)) {
@@ -90,7 +93,7 @@ public class DataValidateInterceptor extends AbstractInterceptor {
 				String[] arr = name.split(MvcConstant.REGEX_POINT);
 
 				if(arr.length > 2) {
-					return;
+					continue;
 				}
 				Method fieldMethod;
 				Object actionFieldObj = null;
@@ -150,7 +153,7 @@ public class DataValidateInterceptor extends AbstractInterceptor {
 	 * @param actionFieldObj
 	 * @throws Exception
 	 */
-	private void injectField(Object action, Field actionField, 
+	protected void injectField(Object action, Field actionField, 
 			String actionFieldName, Object actionFieldObj) throws Exception {
 		Class<?> clazz = action.getClass();
 		Method method = ReflectionUtil.getSetterMethod(clazz, actionFieldName);
@@ -168,7 +171,7 @@ public class DataValidateInterceptor extends AbstractInterceptor {
 	 * @param actionFieldName
 	 * @return
 	 */
-	private Field getActionField(Class<?> clazz, String actionFieldName) {
+	protected Field getActionField(Class<?> clazz, String actionFieldName) {
 		Field field = null;
 		
 		field = ReflectionUtil.getField(clazz, actionFieldName);
@@ -183,7 +186,7 @@ public class DataValidateInterceptor extends AbstractInterceptor {
 	 * @param actionField
 	 * @return
 	 */
-	private Method getFieldGetterMethod(Class<?> clazz, String actionField) {
+	protected Method getFieldGetterMethod(Class<?> clazz, String actionField) {
 		Method fieldGetterMethod = null;
 		
 		fieldGetterMethod = ReflectionUtil.getGetterMethod(clazz, actionField);
@@ -220,7 +223,7 @@ public class DataValidateInterceptor extends AbstractInterceptor {
 			method.invoke(object, arg);
 
 		} catch (Exception e) {
-			throw new ValidateException("method error");
+			throw new ValidateException("method error", e);
 		}
 	}
 
