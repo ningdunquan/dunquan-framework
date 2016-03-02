@@ -7,26 +7,17 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.dunquan.framework.mvc.constant.MvcConstant;
-import org.dunquan.framework.mvc.context.ActionContext;
-import org.dunquan.framework.mvc.context.ActionInvocation;
 import org.dunquan.framework.mvc.exception.ValidateException;
 import org.dunquan.framework.mvc.upload.UploadField;
 import org.dunquan.framework.mvc.upload.UploadFile;
 import org.dunquan.framework.mvc.upload.UploadHelper;
 import org.dunquan.framework.util.ReflectionUtil;
 
-public class UpLoadInterceptor extends DataValidateInterceptor {
+public class UploadValidateStrategy extends AbstractValidateStrategy {
 
-	public void beforeHandle(ActionInvocation actionInvocation)
-			throws ValidateException {
-		ActionContext actionContext = actionInvocation.getActionContext();
-		HttpServletRequest request = actionContext.getHttpServletRequest();
-		Object action = actionInvocation.getAction();
-		
-		if(!UploadHelper.isMultipartFormData(request)) {
-			return;
-		}
-		
+
+	@Override
+	public void validate(Object action, HttpServletRequest request) throws ValidateException {
 		UploadField uploadField = null;
 		try {
 			uploadField = UploadHelper.getUploadField(request);
@@ -34,14 +25,14 @@ public class UpLoadInterceptor extends DataValidateInterceptor {
 			throw new ValidateException("upload error", e);
 		}
 		
-		Map<String, String> param = uploadField.getParams();
 		Map<String, UploadFile> uploads = uploadField.getUploads();
-		
+
+		Map<String, String> param = uploadField.getParams();
 		setActionField(action, param);
 		
 		setActionUploadField(action, uploads);
+		
 	}
-
 
 	private void setActionUploadField(Object action,
 			Map<String, UploadFile> uploads) throws ValidateException {
@@ -155,11 +146,6 @@ public class UpLoadInterceptor extends DataValidateInterceptor {
 				// 这里可能还要添加方法
 			}
 		}
-	}
-
-
-	public void afterHandle(ActionInvocation actionInvocation) throws ValidateException {
-
 	}
 
 }

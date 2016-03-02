@@ -3,62 +3,20 @@ package org.dunquan.framework.mvc.interceptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Enumeration;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.dunquan.framework.mvc.constant.MvcConstant;
-import org.dunquan.framework.mvc.context.ActionInvocation;
 import org.dunquan.framework.mvc.exception.ValidateException;
 import org.dunquan.framework.util.BeanUtil;
 import org.dunquan.framework.util.ReflectionUtil;
 import org.dunquan.framework.util.StringUtil;
 
-public class DataValidateInterceptor extends AbstractInterceptor {
+public abstract class AbstractValidateStrategy implements ValidateStrategy {
 
-	@Override
-	public void beforeHandle(ActionInvocation actionInvocation)
-			throws ValidateException {
-		HttpServletRequest request = actionInvocation.getActionContext()
-				.getHttpServletRequest();
-
-		Object action = actionInvocation.getAction();
-
-		Map<String, String> paramMap = getAllDispatcherParameter(request);
-		setActionField(action, paramMap);
-
-	}
-
-	@Override
-	public void afterHandle(ActionInvocation actionInvocation)
-			throws ValidateException {
-
-	}
-
-	/**
-	 * 获取所有的参数，将其存在map中
-	 * 
-	 * @param request
-	 */
-	private Map<String, String> getAllDispatcherParameter(
-			HttpServletRequest request) {
-		Map<String, String> paramMap = new ConcurrentHashMap<String, String>();
-
-		Enumeration<String> enumeration = request.getParameterNames();
-
-		String name = null;
-		String value = null;
-		while (enumeration.hasMoreElements()) {
-			name = enumeration.nextElement();
-			value = request.getParameter(name);
-			paramMap.put(name, value);
-		}
-
-		return paramMap;
-	}
-
+	public abstract void validate(Object action, HttpServletRequest request) throws ValidateException;
+	
 	/**
 	 * 根据前端提交的参数设置action的成员变量
 	 * 
@@ -146,55 +104,6 @@ public class DataValidateInterceptor extends AbstractInterceptor {
 	}
 
 	/**
-	 * 给action注入属性
-	 * @param action
-	 * @param actionField
-	 * @param actionFieldName
-	 * @param actionFieldObj
-	 * @throws Exception
-	 */
-	protected void injectField(Object action, Field actionField, 
-			String actionFieldName, Object actionFieldObj) throws Exception {
-		Class<?> clazz = action.getClass();
-		Method method = ReflectionUtil.getSetterMethod(clazz, actionFieldName);
-		if(method != null) {
-			method.invoke(action, actionFieldObj);
-		}else {
-			actionField.set(action, actionFieldObj);
-		}
-		
-	}
-
-	/**
-	 * 根据name获取属性
-	 * @param clazz
-	 * @param actionFieldName
-	 * @return
-	 */
-	protected Field getActionField(Class<?> clazz, String actionFieldName) {
-		Field field = null;
-		
-		field = ReflectionUtil.getField(clazz, actionFieldName);
-		
-		return field;
-	}
-
-
-	/**
-	 * 获取action属性的getter方法
-	 * @param clazz
-	 * @param actionField
-	 * @return
-	 */
-	protected Method getFieldGetterMethod(Class<?> clazz, String actionField) {
-		Method fieldGetterMethod = null;
-		
-		fieldGetterMethod = ReflectionUtil.getGetterMethod(clazz, actionField);
-		
-		return fieldGetterMethod;
-	}
-
-	/**
 	 * 直接设置属性的值
 	 * 
 	 * @param action
@@ -203,9 +112,12 @@ public class DataValidateInterceptor extends AbstractInterceptor {
 	 * @throws IllegalAccessException
 	 * @throws IllegalArgumentException
 	 */
-	private void setField(Object action, String name, String value)
-			throws IllegalArgumentException, IllegalAccessException {
-		ReflectionUtil.injectField(action, name, value);
+	private void setField(Object action, String name, String value) {
+		try {
+			ReflectionUtil.injectField(action, name, value);
+		} catch (Exception e) {
+			throw new ValidateException("inject field error", e);
+		}
 	}
 
 	/**
@@ -255,4 +167,52 @@ public class DataValidateInterceptor extends AbstractInterceptor {
 		return arg;
 	}
 
+	/**
+	 * 给action注入属性
+	 * @param action
+	 * @param actionField
+	 * @param actionFieldName
+	 * @param actionFieldObj
+	 * @throws Exception
+	 */
+	protected void injectField(Object action, Field actionField, 
+			String actionFieldName, Object actionFieldObj) throws Exception {
+		Class<?> clazz = action.getClass();
+		Method method = ReflectionUtil.getSetterMethod(clazz, actionFieldName);
+		if(method != null) {
+			method.invoke(action, actionFieldObj);
+		}else {
+			actionField.set(action, actionFieldObj);
+		}
+		
+	}
+
+	/**
+	 * 根据name获取属性
+	 * @param clazz
+	 * @param actionFieldName
+	 * @return
+	 */
+	protected Field getActionField(Class<?> clazz, String actionFieldName) {
+		Field field = null;
+		
+		field = ReflectionUtil.getField(clazz, actionFieldName);
+		
+		return field;
+	}
+
+
+	/**
+	 * 获取action属性的getter方法
+	 * @param clazz
+	 * @param actionField
+	 * @return
+	 */
+	protected Method getFieldGetterMethod(Class<?> clazz, String actionField) {
+		Method fieldGetterMethod = null;
+		
+		fieldGetterMethod = ReflectionUtil.getGetterMethod(clazz, actionField);
+		
+		return fieldGetterMethod;
+	}
 }

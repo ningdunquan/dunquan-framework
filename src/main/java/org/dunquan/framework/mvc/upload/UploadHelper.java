@@ -43,16 +43,6 @@ public class UploadHelper {
 		fileUpload = new ServletFileUpload(factory);
 	}
 	
-	/**
-	 * 是否是文件上传
-	 * @param request
-	 * @return
-	 */
-	public static boolean isMultipartFormData(HttpServletRequest request) {
-		
-		return ServletFileUpload.isMultipartContent(request);
-	}
-	
 	public static UploadField getUploadField(HttpServletRequest request) throws Exception {
 		// 这意味着可以上传多个文件
 		@SuppressWarnings("unchecked")

@@ -4,16 +4,13 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-
-
 import org.dunquan.framework.factory.InstanceFactory;
 import org.dunquan.framework.mvc.context.ActionInvocation;
 import org.dunquan.framework.mvc.context.ExecuteContext;
 import org.dunquan.framework.mvc.exception.DispatcherException;
-import org.dunquan.framework.mvc.interceptor.DataValidateInterceptor;
 import org.dunquan.framework.mvc.interceptor.Interceptor;
+import org.dunquan.framework.mvc.interceptor.ParamValidateInterceptor;
 import org.dunquan.framework.mvc.interceptor.ServletRefInterceptor;
-import org.dunquan.framework.mvc.interceptor.UpLoadInterceptor;
 import org.dunquan.framework.mvc.view.ViewResolver;
 import org.dunquan.framework.sourse.ActionSourse;
 import org.dunquan.framework.util.ReflectionUtil;
@@ -25,8 +22,7 @@ public class DefaultActionHandler implements ActionHandler {
 	
 	static{
 		handlers.add(new ServletRefInterceptor());
-		handlers.add(new DataValidateInterceptor());
-		handlers.add(new UpLoadInterceptor());
+		handlers.add(new ParamValidateInterceptor());
 	}
 	
 	/**

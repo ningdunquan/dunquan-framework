@@ -7,6 +7,9 @@ import org.dunquan.framework.mvc.core.ActionHandler;
 import org.dunquan.framework.mvc.core.DefaultActionHandler;
 import org.dunquan.framework.mvc.core.DefaultExceptionHandler;
 import org.dunquan.framework.mvc.core.ExceptionHandler;
+import org.dunquan.framework.mvc.interceptor.DataValidateStrategy;
+import org.dunquan.framework.mvc.interceptor.UploadValidateStrategy;
+import org.dunquan.framework.mvc.interceptor.ValidateStrategy;
 import org.dunquan.framework.mvc.view.DefaultViewResolver;
 import org.dunquan.framework.mvc.view.FreeMarkerViewManager;
 import org.dunquan.framework.mvc.view.JspViewManager;
@@ -61,6 +64,34 @@ public class InstanceFactory {
      * velocity视图管理器
      */
     private static final String VELOCITY_VIEW_MANAGER = "dunquan.framework.mvc.velocity_view_manager";
+  
+    /**
+     * 普通参数验证策略
+     */
+    private static final String DATA_VALIDATE_STRATEGY = "dunquan.framework.mvc.data_validate_strategy";
+
+    /**
+     * 上传数据验证策略
+     */
+    private static final String UPLOAD_VALIDATE_STRATEGY = "dunquan.framework.mvc.upload_validate_strategy";
+    
+    
+    
+    /**
+     * 获取DataValidateStrategy
+     * @return
+     */
+    public static ValidateStrategy getDataValidateStrategy() {
+    	return getInstance(DATA_VALIDATE_STRATEGY, DataValidateStrategy.class);
+    }
+    
+    /**
+     * 获取UploadValidateStrategy
+     * @return
+     */
+    public static ValidateStrategy getUploadvValidateStrategy() {
+    	return getInstance(UPLOAD_VALIDATE_STRATEGY, UploadValidateStrategy.class);
+    }
     
     /**
      * 获取 HandlerExceptionResolver
