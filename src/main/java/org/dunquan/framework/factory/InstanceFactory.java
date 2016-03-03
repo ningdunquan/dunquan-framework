@@ -4,9 +4,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.dunquan.framework.mvc.core.ActionHandler;
+import org.dunquan.framework.mvc.core.ActionMapper;
 import org.dunquan.framework.mvc.core.DefaultActionHandler;
+import org.dunquan.framework.mvc.core.DefaultActionMapper;
 import org.dunquan.framework.mvc.core.DefaultExceptionHandler;
 import org.dunquan.framework.mvc.core.ExceptionHandler;
+import org.dunquan.framework.mvc.handle.ManagerHandle;
 import org.dunquan.framework.mvc.interceptor.DataValidateStrategy;
 import org.dunquan.framework.mvc.interceptor.UploadValidateStrategy;
 import org.dunquan.framework.mvc.interceptor.ValidateStrategy;
@@ -25,15 +28,16 @@ public class InstanceFactory {
      */
     private static final Map<String, Object> cache = new ConcurrentHashMap<String, Object>();
 
+    
     /**
      * ClassScanner
      */
     private static final String CLASS_SCANNER = "dunquan.framework.custom.class_scanner";
 
     /**
-     * HandlerMapping
+     * ActionMapper
      */
-    private static final String HANDLER_MAPPING = "dunquan.framework.custom.handler_mapping";
+    private static final String ACTION_MAPPER = "dunquan.framework.mvc.action_mapper";
 
     /**
      * HandlerInvoker
@@ -76,6 +80,13 @@ public class InstanceFactory {
     private static final String UPLOAD_VALIDATE_STRATEGY = "dunquan.framework.mvc.upload_validate_strategy";
     
     
+    /**
+     * 获取actionMapper
+     * @return
+     */
+    public static ActionMapper getActionMapper() {
+    	return getInstance(ACTION_MAPPER, DefaultActionMapper.class);
+    }
     
     /**
      * 获取DataValidateStrategy

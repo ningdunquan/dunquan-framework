@@ -7,7 +7,7 @@ import java.util.Map;
 import org.dunquan.framework.exception.MyException;
 import org.dunquan.framework.manager.BeanManager;
 import org.dunquan.framework.manager.XmlBeanManager;
-import org.dunquan.framework.sourse.BeanSourse;
+import org.dunquan.framework.sourse.BeanSource;
 import org.dunquan.framework.util.BeanUtil;
 import org.dunquan.framework.util.ReflectionUtil;
 import org.dunquan.framework.util.StringUtil;
@@ -44,19 +44,19 @@ public class XmlApplicationBeanLoader implements ApplicationBeanLoader {
 	 * @return
 	 */
 	private Object getSinglton(String beanName) {
-		BeanSourse beanSourse = beanManager.getBean(beanName);
-		if (beanSourse == null) {
+		BeanSource beanSource = beanManager.getBean(beanName);
+		if (beanSource == null) {
 			// throw new MyException("找不到对应的bean对象");
 			return null;
 		}
-		boolean prototype = beanSourse.getPrototype();
+		boolean prototype = beanSource.getPrototype();
 		Object object = beanMap.get(beanName);
 //		System.out.println("bean" + "--" + beanName + "--" + object);
 		if (!prototype) {
 			return object;
 		}
 
-		return getPrototype(beanSourse, object);
+		return getPrototype(beanSource, object);
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class XmlApplicationBeanLoader implements ApplicationBeanLoader {
 	 * @param object
 	 * @return
 	 */
-	private Object getPrototype(BeanSourse beanSourse, Object object) {
+	private Object getPrototype(BeanSource beanSource, Object object) {
 		Class<?> clazz = object.getClass();
 //		Method[] methods = clazz.getDeclaredMethods();
 		Object object2 = null;
@@ -77,7 +77,7 @@ public class XmlApplicationBeanLoader implements ApplicationBeanLoader {
 //		String methodName = null;
 //		Object objArg = null;
 		
-		setBeanRefs(beanSourse, object2);
+		setBeanRefs(beanSource, object2);
 		
 		
 //		for (Method method : methods) {
@@ -106,16 +106,16 @@ public class XmlApplicationBeanLoader implements ApplicationBeanLoader {
 	 * @param beanManager
 	 */
 	private void setBeanMap(BeanManager beanManager) {
-		Map<String, BeanSourse> map = beanManager.getBeanMap();
+		Map<String, BeanSource> map = beanManager.getBeanMap();
 
-		BeanSourse beanSourse = null;
+		BeanSource beanSource = null;
 		String className = null;
 		Map<String, String> fieldMap = new HashMap<String, String>();
 //		Map<String, String> refMap = new HashMap<String, String>();
 
-		for (Map.Entry<String, BeanSourse> entry : map.entrySet()) {
-			beanSourse = entry.getValue();
-			className = beanSourse.getClassName();
+		for (Map.Entry<String, BeanSource> entry : map.entrySet()) {
+			beanSource = entry.getValue();
+			className = beanSource.getClassName();
 			Class<?> clazz = null;
 			try {
 				clazz = Class.forName(className);
@@ -130,7 +130,7 @@ public class XmlApplicationBeanLoader implements ApplicationBeanLoader {
 				throw new MyException("实例化类异常");
 			}
 
-			fieldMap = beanSourse.getFields();
+			fieldMap = beanSource.getFields();
 			for (Map.Entry<String, String> fieldEntry : fieldMap.entrySet()) {
 				String fieldName = fieldEntry.getKey();
 				String fieldValue = fieldEntry.getValue();
@@ -147,13 +147,13 @@ public class XmlApplicationBeanLoader implements ApplicationBeanLoader {
 			beanMap.put(entry.getKey(), object);
 		}
 		
-		for (Map.Entry<String, BeanSourse> entry : map.entrySet()) {
-			beanSourse = entry.getValue();
+		for (Map.Entry<String, BeanSource> entry : map.entrySet()) {
+			beanSource = entry.getValue();
 
-			if (!beanSourse.getRefs().isEmpty()) {
+			if (!beanSource.getRefs().isEmpty()) {
 				Object object = getBean(entry.getKey());
 
-				object = setBeanRefs(beanSourse, object);
+				object = setBeanRefs(beanSource, object);
 				beanMap.put(entry.getKey(), object);
 			}
 		}
@@ -161,13 +161,13 @@ public class XmlApplicationBeanLoader implements ApplicationBeanLoader {
 
 	/**
 	 * 注入引用成员变量
-	 * @param beanSourse
+	 * @param beanSource
 	 * @param object
 	 * @return
 	 */
-	private Object setBeanRefs(BeanSourse beanSourse, Object object) {
+	private Object setBeanRefs(BeanSource beanSource, Object object) {
 		Map<String, String> refMap;
-		refMap = beanSourse.getRefs();
+		refMap = beanSource.getRefs();
 		for (Map.Entry<String, String> refEntry : refMap.entrySet()) {
 			String refName = refEntry.getKey();
 			try {

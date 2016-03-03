@@ -1,25 +1,26 @@
 package org.dunquan.framework.mvc.context;
 
-import org.dunquan.framework.sourse.ActionSourse;
+import org.dunquan.framework.sourse.ExecuteActionSource;
+
 
 public class DefaultExecuteContext implements ExecuteContext {
 
 	private ActionInvocation actionInvocation;
 
-	private ActionSourse actionSourse;
+	private ExecuteActionSource actionSource;
 
 	public DefaultExecuteContext() {
 		super();
 	}
-	public DefaultExecuteContext(ActionInvocation actionInvocation, ActionSourse actionSourse) {
+	public DefaultExecuteContext(ActionInvocation actionInvocation, ExecuteActionSource actionSource) {
 		this.actionInvocation = actionInvocation;
-		this.actionSourse = actionSourse;
+		this.actionSource = actionSource;
 	}
 	public DefaultExecuteContext(ActionContext actionContext, Object action,
-			ActionSourse actionSourse) {
+			ExecuteActionSource actionSource) {
 		super();
 		this.actionInvocation = new DefaultActionInvocation(actionContext, action);
-		this.actionSourse = actionSourse;
+		this.actionSource = actionSource;
 	}
 
 	public ActionInvocation getActionInvocation() {
@@ -30,12 +31,12 @@ public class DefaultExecuteContext implements ExecuteContext {
 		this.actionInvocation = actionInvocation;
 	}
 
-	public ActionSourse getActionSourse() {
-		return actionSourse;
+	public ExecuteActionSource getActionSource() {
+		return actionSource;
 	}
 
-	public void setActionSourse(ActionSourse actionSourse) {
-		this.actionSourse = actionSourse;
+	public void setActionSource(ExecuteActionSource actionSource) {
+		this.actionSource = actionSource;
 	}
 
 }

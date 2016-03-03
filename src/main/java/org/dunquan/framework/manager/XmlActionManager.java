@@ -1,25 +1,26 @@
 package org.dunquan.framework.manager;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.dunquan.framework.exception.MyException;
-import org.dunquan.framework.sourse.ActionSourse;
+import org.dunquan.framework.sourse.ActionSource;
+import org.dunquan.framework.sourse.MethodSource;
 import org.dunquan.framework.sourse.Result;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class XmlActionManager implements ActionManager {
+public class XmlActionManager implements ActionManager, XmlManager {
 
 	private String path = "action.xml";
-	private Map<String, ActionSourse> actionMap = new HashMap<String, ActionSourse>();
+	private Map<String, ActionSource> actionMap = new ConcurrentHashMap<String, ActionSource>();
 	
 	public XmlActionManager() {
 		manager(path);
@@ -30,11 +31,11 @@ public class XmlActionManager implements ActionManager {
 		manager(path);
 	}
 	
-	public Map<String, ActionSourse> getActionMap() {
+	public Map<String, ActionSource> getActionMap() {
 		return this.actionMap;
 	}
 
-	public ActionSourse getActionSourse(String actionName) {
+	public ActionSource getActionSourse(String actionName) {
 		return actionMap.get(actionName);
 	}
 	
@@ -42,11 +43,9 @@ public class XmlActionManager implements ActionManager {
 	public void manager(String path) {
 		Document document = readDocFile(path);
 		
-		ActionSourse actionSourse = null;
+		ActionSource actionSource = null;
 		Node node = null;
-		String actionUrl = null;
 		String refClass = null;
-		String actionMethod = null;
 		
 		NodeList beanList = document.getElementsByTagName("action");
 	
@@ -54,69 +53,142 @@ public class XmlActionManager implements ActionManager {
 		 * 遍历文件中的<action/>节点
 		 */
 		for (int i = 0; i < beanList.getLength(); i++) {
-			//获取<bean/>节点的所有子节点
+			//获取<action/>节点的所有子节点
 			NodeList nodeList = beanList.item(i).getChildNodes();
-			actionSourse = new ActionSourse();
+			actionSource = new ActionSource();
 
-			List<Result> results = new ArrayList<Result>();
+			Set<Result> results = new CopyOnWriteArraySet<Result>();
+			Set<MethodSource> methodSources = new CopyOnWriteArraySet<MethodSource>();
 			
-			//遍历<bean/>的子节点
+			//遍历<action/>的子节点
 			for (int j = 0; j < nodeList.getLength(); j++) {
 				node = nodeList.item(j);
 				String nodeName = node.getNodeName();
 				
-				if (!nodeName.equals("#text")) {
+				if (!"#text".equals(nodeName)) {
 					
-					if (nodeName.equals("url")) {
-						actionUrl = node.getTextContent();
-						actionSourse.setActionUrl(actionUrl);
-						continue;
-					}
-					
-					if (nodeName.equals("refClass")) {
+					/**
+					 * node为refClass
+					 */
+					if ("refClass".equals(nodeName)) {
 						
 						refClass = node.getTextContent();
-						actionSourse.setRefClass(refClass);
+						//设置action的name，即全类名
+						actionSource.setName(refClass);
 						continue;
 					}
 					
-					if (nodeName.equals("method")) {
+					/**
+					 * node为out
+					 */
+					if ("out".equals(nodeName)) {
+						String outValue = node.getTextContent();
+						Set<String> outs = new CopyOnWriteArraySet<String>();
 						
-						actionMethod = node.getTextContent();
-						actionSourse.setActionMethod(actionMethod);
+						if(outValue != null) {
+							if(outValue.contains(",")) {
+								addOuts(outValue, outs);
+							}else {
+								outs.add(outValue);
+							}
+						}
+						
+						actionSource.setOut(outs);
 						continue;
 					}
 					
-					setResultListByNode("result", node, results);
+					/**
+					 * node为method
+					 */
+					if ("method".equals(nodeName)) {
+						
+						setMethodSourceListByNode(node, methodSources);
+						continue;
+					}
+					
+					/**
+					 * node为result
+					 */
+					if("result".equals(nodeName)) {
+						setResultListByNode(node, results);
+						continue;
+					}
 					
 				}
 			}
-			actionSourse.setResults(results);;
-			actionMap.put(actionUrl, actionSourse);
+			actionSource.setResults(results);
+			actionSource.setMethodSources(methodSources);
+			actionMap.put(refClass, actionSource);
 		}
 	}
 	
+	/**
+	 * 添加输出数据
+	 * @param outValue
+	 * @param outs
+	 */
+	private void addOuts(String outValue, Set<String> outs) {
+		if(outValue == null) {
+			return;
+		}
+		String[] arr = outValue.split(",");
+		for(int i = 0; i < arr.length; i++) {
+			outs.add(arr[i]);
+		}
+		
+	}
+	
+	/**
+	 * 根据node设置methodSource集合的值
+	 * @param node
+	 * @param methodSources
+	 */
+	private void setMethodSourceListByNode(Node node, Set<MethodSource> methodSources) {
+		MethodSource methodSource = new MethodSource();
+		
+		methodSource.setMethodName(node.getTextContent());
+		// 如果元素有属性值
+		if (node.hasAttributes()) {
+			//获取所有的属性节点
+			NamedNodeMap nodeMap = node.getAttributes();
+			
+			int len = nodeMap.getLength();
+			if(len >= 2) {
+				methodSource.setUrl(nodeMap.item(0).getNodeValue());
+				methodSource.setAjax(Boolean.parseBoolean(nodeMap.item(1).getNodeValue()));
+			} else if(len == 1) {
+				methodSource.setUrl(nodeMap.item(0).getNodeValue());
+			}
+		}
+		//添加属性
+		methodSources.add(methodSource);
+	}
+
 	/**
 	 * 根据node设置result集合的值
 	 * @param string
 	 * @param node
 	 * @param results
 	 */
-	private void setResultListByNode(String string, Node node, List<Result> results) {
-		if(string != null && string.equals(node.getNodeName())) {
-			Result result = new Result();
+	private void setResultListByNode(Node node, Set<Result> results) {
+		Result result = new Result();
+		
+		result.setResultValue(node.getTextContent());
+		// 如果元素有属性值
+		if (node.hasAttributes()) {
+			//获取所有的属性节点
+			NamedNodeMap nodeMap = node.getAttributes();
 			
-			result.setResultValue(node.getTextContent());
-			// 如果元素有属性值
-			if (node.hasAttributes()) {
-				//获取所有的属性节点
-				NamedNodeMap nodeMap = node.getAttributes();
-				
+			int len = nodeMap.getLength();
+			if(len >= 2) {
 				result.setResultName(nodeMap.item(0).getNodeValue());
 				result.setType(nodeMap.item(1).getNodeValue());
+			}else if(len == 1) {
+				result.setResultName(nodeMap.item(0).getNodeValue());
 			}
-			results.add(result);
 		}
+		//添加属性
+		results.add(result);
 	}
 	
 

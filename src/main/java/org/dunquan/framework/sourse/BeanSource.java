@@ -2,7 +2,7 @@ package org.dunquan.framework.sourse;
 
 import java.util.Map;
 
-public class BeanSourse {
+public class BeanSource {
 
 	private String id;
 	private String className;
@@ -10,9 +10,9 @@ public class BeanSourse {
 	private Map<String, String> refs;
 	private boolean prototype;
 	
-	public BeanSourse() {
+	public BeanSource() {
 	}
-	public BeanSourse(String id) {
+	public BeanSource(String id) {
 		super();
 		this.id = id;
 	}

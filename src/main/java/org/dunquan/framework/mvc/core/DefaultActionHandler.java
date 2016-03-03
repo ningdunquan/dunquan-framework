@@ -12,7 +12,7 @@ import org.dunquan.framework.mvc.interceptor.Interceptor;
 import org.dunquan.framework.mvc.interceptor.ParamValidateInterceptor;
 import org.dunquan.framework.mvc.interceptor.ServletRefInterceptor;
 import org.dunquan.framework.mvc.view.ViewResolver;
-import org.dunquan.framework.sourse.ActionSourse;
+import org.dunquan.framework.sourse.ExecuteActionSource;
 import org.dunquan.framework.util.ReflectionUtil;
 
 public class DefaultActionHandler implements ActionHandler {
@@ -46,13 +46,17 @@ public class DefaultActionHandler implements ActionHandler {
 
 	public void execute(ExecuteContext executeContext) throws DispatcherException {
 
-		ActionSourse actionSourse = executeContext.getActionSourse();
+		ExecuteActionSource actionSource = executeContext.getActionSource();
 		ActionInvocation actionInvocation = executeContext.getActionInvocation();
 		if(actionInvocation == null) {
 			return;
 		}
 		Object action = actionInvocation.getAction();
-		String methodName = actionSourse.getActionMethod();
+		String methodName = actionSource.getMethodSource().getMethodName();
+		
+		if(methodName == null) {
+			throw new DispatcherException("no action method");
+		}
 		
 		Object actionValue = execute(action, methodName);
 		

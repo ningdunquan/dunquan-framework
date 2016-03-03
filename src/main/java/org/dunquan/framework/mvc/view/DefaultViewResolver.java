@@ -2,8 +2,8 @@ package org.dunquan.framework.mvc.view;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,8 +13,10 @@ import org.dunquan.framework.mvc.context.ActionContext;
 import org.dunquan.framework.mvc.context.ExecuteContext;
 import org.dunquan.framework.mvc.core.ActionHandler;
 import org.dunquan.framework.mvc.exception.DispatcherException;
+import org.dunquan.framework.mvc.handle.ManagerHandle;
 import org.dunquan.framework.mvc.utils.WebUtils;
-import org.dunquan.framework.sourse.ActionSourse;
+import org.dunquan.framework.sourse.ActionSource;
+import org.dunquan.framework.sourse.ExecuteActionSource;
 import org.dunquan.framework.sourse.Result;
 import org.dunquan.framework.util.ReflectionUtil;
 
@@ -26,10 +28,10 @@ public class DefaultViewResolver implements ViewResolver {
 		HttpServletRequest request = actionContext.getHttpServletRequest();
 		HttpServletResponse response = actionContext.getHttpServletResponse();
 
-		ActionSourse actionSourse = executeContext.getActionSourse();
+		ExecuteActionSource actionSource = executeContext.getActionSource();
 		Object action = executeContext.getActionInvocation().getAction();
 		
-		if(WebUtils.isAJAX(request)) {
+		if(WebUtils.isAJAX(request) || actionSource.getMethodSource().isAjax()) {
 			//写入json数据
 			WebUtils.writeJSON(response, actionValue);
 			return;
@@ -42,26 +44,26 @@ public class DefaultViewResolver implements ViewResolver {
 		}else if(actionValue instanceof Result) {
 			Result result = (Result)actionValue;
 			
-			resolveResult(actionSourse, action, request, response, result);
+			resolveResult(actionSource.getName(), action, request, response, result);
 			
 		}else if(actionValue instanceof String) {
 			String value = (String) actionValue;
 			
-			Result result = findResult(actionSourse, value);
+			Result result = findResult(actionSource.getName(), value);
 			
 			if(result == null) {
 				throw new DispatcherException("no action result");
 			}
 			
 			if(Result.RE_ACTION.equalsIgnoreCase(result.getType())) {
-				actionSourse.setActionMethod(result.getResultValue());
+				actionSource.getMethodSource().setMethodName(result.getResultValue());
 				
 				actionHandler.execute(executeContext);
 				
 				return;
 			}
 			
-			resolveResult(actionSourse, action, request, response, result);
+			resolveResult(actionSource.getName(), action, request, response, result);
 		}else {
 			return;
 		}
@@ -76,7 +78,7 @@ public class DefaultViewResolver implements ViewResolver {
 	 * @param result
 	 * @throws DispatcherException
 	 */
-	private void resolveResult(ActionSourse actionSourse, Object action,
+	private void resolveResult(String name, Object action,
 			HttpServletRequest request, HttpServletResponse response,
 			Result result) throws DispatcherException {
 		if(Result.RE_REDIRECT.equalsIgnoreCase(result.getType())) {
@@ -85,7 +87,7 @@ public class DefaultViewResolver implements ViewResolver {
 		}
 		
 		if(Result.RE_DISPATCHER.equalsIgnoreCase(result.getType())) {
-			List<String> outs = actionSourse.getOut();
+			Set<String> outs = getActionSource(name).getOut();
 			Map<String, Object> data = new HashMap<String, Object>();
 			for(String out : outs) {
 				Field field = ReflectionUtil.getField(action, out);
@@ -105,6 +107,24 @@ public class DefaultViewResolver implements ViewResolver {
 			
 			return;
 		}
+	}
+
+	/**
+	 * 获取actionSource
+	 * @param name
+	 * @return
+	 */
+	private ActionSource getActionSource(String name) {
+		Map<String, ActionSource> map = ManagerHandle.getInstance().getActionManager().getActionMap();
+		
+		ActionSource actionSource = null;
+		for(Map.Entry<String, ActionSource> entry : map.entrySet()) {
+			if(name.equals(entry.getKey())) {
+				actionSource = entry.getValue();
+				return actionSource;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -154,9 +174,14 @@ public class DefaultViewResolver implements ViewResolver {
 	 * @param resultValue
 	 * @return
 	 */
-	private Result findResult(ActionSourse actionSourse, String actionValue) {
+	private Result findResult(String name, String actionValue) {
+		ActionSource actionSource = getActionSource(name);
+		if(actionSource == null) {
+			return null;
+		}
+		
 		String resultName = null;
-		for(Result result : actionSourse.getResults()) {
+		for(Result result : actionSource.getResults()) {
 			resultName = result.getResultName();
 			if(actionValue.equals(resultName)) {
 				return result;

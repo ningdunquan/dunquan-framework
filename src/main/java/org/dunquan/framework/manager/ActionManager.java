@@ -5,21 +5,22 @@ import java.util.Map;
 
 
 
-import org.dunquan.framework.sourse.ActionSourse;
 
-public interface ActionManager extends Manager {
+import org.dunquan.framework.sourse.ActionSource;
+
+public interface ActionManager {
 
 	/**
 	 * 获取actionMap对象
 	 * @return
 	 */
-	Map<String, ActionSourse> getActionMap();
+	Map<String, ActionSource> getActionMap();
 	
 	/**
-	 * 获取单个的actionSourse对象
+	 * 获取单个的actionSource对象
 	 * @param actionName
 	 * @return
 	 */
-	ActionSourse getActionSourse(String actionName);
+	ActionSource getActionSourse(String actionName);
 	
 }

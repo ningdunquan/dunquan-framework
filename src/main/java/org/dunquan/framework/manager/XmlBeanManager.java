@@ -7,16 +7,16 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.dunquan.framework.exception.MyException;
-import org.dunquan.framework.sourse.BeanSourse;
+import org.dunquan.framework.sourse.BeanSource;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class XmlBeanManager implements BeanManager {
+public class XmlBeanManager implements BeanManager,XmlManager {
 
-	private Map<String, BeanSourse> map = new HashMap<String, BeanSourse>();
+	private Map<String, BeanSource> map = new HashMap<String, BeanSource>();
 	private String path = "bean.xml";
 
 	public XmlBeanManager() {
@@ -31,7 +31,7 @@ public class XmlBeanManager implements BeanManager {
 	 * 获取存放配置文件数据的map
 	 * @return
 	 */
-	public Map<String, BeanSourse> getBeanMap() {
+	public Map<String, BeanSource> getBeanMap() {
 		return this.map;
 	}
 	
@@ -40,7 +40,7 @@ public class XmlBeanManager implements BeanManager {
 	 * @param bean
 	 * @return
 	 */
-	public BeanSourse getBean(String bean) {
+	public BeanSource getBean(String bean) {
 		return map.get(bean);
 	}
 
@@ -53,7 +53,7 @@ public class XmlBeanManager implements BeanManager {
 		String className = null;
 		boolean prototype = false;
 		Node node = null;
-		BeanSourse beanSourse = null;
+		BeanSource beanSourse = null;
 		
 		Document document = readDocFile(path);
 		
@@ -65,7 +65,7 @@ public class XmlBeanManager implements BeanManager {
 		for (int i = 0; i < beanList.getLength(); i++) {
 			//获取<bean/>节点的所有子节点
 			NodeList nodeList = beanList.item(i).getChildNodes();
-			beanSourse = new BeanSourse();
+			beanSourse = new BeanSource();
 
 			Map<String, String> fieldMap = new HashMap<String, String>();
 			Map<String, String> refMap = new HashMap<String, String>();

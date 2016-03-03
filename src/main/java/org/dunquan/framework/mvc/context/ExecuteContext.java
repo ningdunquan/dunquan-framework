@@ -1,6 +1,7 @@
 package org.dunquan.framework.mvc.context;
 
-import org.dunquan.framework.sourse.ActionSourse;
+import org.dunquan.framework.sourse.ExecuteActionSource;
+
 
 /**
  * 执行期间的context
@@ -11,6 +12,6 @@ public interface ExecuteContext {
 
 	public ActionInvocation getActionInvocation();
 	
-	public ActionSourse getActionSourse();
+	public ExecuteActionSource getActionSource();
 	
 }

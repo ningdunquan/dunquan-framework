@@ -47,8 +47,4 @@ public class ExecuteActionSource implements Serializable {
 		this.methodSource = methodSource;
 	}
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-	
 }

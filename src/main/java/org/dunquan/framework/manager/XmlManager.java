@@ -2,7 +2,7 @@ package org.dunquan.framework.manager;
 
 import org.w3c.dom.Document;
 
-public interface Manager {
+public interface XmlManager {
 
 	/**
 	 * 加载配置文件

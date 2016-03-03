@@ -15,12 +15,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.dunquan.framework.factory.InstanceFactory;
 import org.dunquan.framework.mvc.context.ActionContext;
 import org.dunquan.framework.mvc.core.ActionCommand;
+import org.dunquan.framework.mvc.core.ActionMapper;
 import org.dunquan.framework.mvc.core.ExceptionHandler;
 import org.dunquan.framework.mvc.core.RequestBean;
 import org.dunquan.framework.mvc.handle.BeforePrepareHandle;
 import org.dunquan.framework.mvc.handle.ManagerHandle;
 import org.dunquan.framework.mvc.utils.WebUtils;
-import org.dunquan.framework.sourse.ActionSourse;
+import org.dunquan.framework.sourse.ActionSource;
+import org.dunquan.framework.sourse.ExecuteActionSource;
 
 /**
  * dispatcher分发的servlet，负责把请求交给真正的action来执行
@@ -28,18 +30,15 @@ import org.dunquan.framework.sourse.ActionSourse;
  * @author dunquan
  *
  */
-public class DispatcherExcuteServlet extends HttpServlet {
+public class DispatcherExecuteServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	private Map<String, ActionSourse> actionMap;
-	
+	private ActionMapper actionMapper;
+
 	private BeforePrepareHandle prepareHandle;
-	
-	private ManagerHandle managerHandle;
-	
+
 	private ExceptionHandler exceptionHandler;
-	
-	
+
 	/**
 	 * 初始化servlet
 	 */
@@ -47,44 +46,46 @@ public class DispatcherExcuteServlet extends HttpServlet {
 		ServletContext servletContext = config.getServletContext();
 
 		prepareHandle = new BeforePrepareHandle(servletContext);
-		managerHandle = new ManagerHandle();
 		exceptionHandler = InstanceFactory.getExceptionHandler();
+		actionMapper = InstanceFactory.getActionMapper();
+
+		ManagerHandle managerHandle = ManagerHandle.getInstance();
+		// 初始化
+		managerHandle.init();
 	}
 
-	
 	@Override
 	public void service(ServletRequest req, ServletResponse res)
 			throws ServletException, IOException {
-		HttpServletRequest request = (HttpServletRequest)req;
-		HttpServletResponse response = (HttpServletResponse)res;
-		
-		RequestBean requestBean = WebUtils.getRequestBean(request);
-		String url = requestBean.getRequestPath();
+		HttpServletRequest request = (HttpServletRequest) req;
+		HttpServletResponse response = (HttpServletResponse) res;
 
-		ActionContext actionContext = prepareHandle.createActionContext(request, response);
-		
-		Map<String, ActionSourse> actionMapSourse = getLocalActionMap();
-		ActionSourse actionSourse = findActionSourse(url, actionMapSourse);
-		
-		if(actionSourse == null) {
-			errorDispatcher(request, response, "can't find action", null);
-			return;
-		}
+		RequestBean requestBean = WebUtils.getRequestBean(request);
+
+		ActionContext actionContext = prepareHandle.createActionContext(
+				request, response);
 
 		try {
-			ActionCommand actionCommand = new ActionCommand(requestBean, actionContext, managerHandle.getApplicationBeanLoader(), actionSourse);
-			
+			ExecuteActionSource actionSource = actionMapper.findExecuteActionSource(requestBean);
+
+			if (actionSource == null) {
+				errorDispatcher(request, response, "can't find action", null);
+				return;
+			}
+
+			ActionCommand actionCommand = new ActionCommand(actionContext, actionSource);
+
 			actionCommand.execute();
 		} catch (Exception e) {
 			errorDispatcher(request, response, e.getMessage(), e);
-		}finally {
+		} finally {
 			actionContext.destroy();
 		}
 	}
 
-
 	/**
 	 * 异常处理
+	 * 
 	 * @param request
 	 * @param response
 	 * @param string
@@ -93,50 +94,7 @@ public class DispatcherExcuteServlet extends HttpServlet {
 	private void errorDispatcher(HttpServletRequest request,
 			HttpServletResponse response, String msg, Exception e) {
 		exceptionHandler.handleError(request, response, msg, e);
-	}
-
-	/**
-	 * 寻找actionSourse对象
-	 * @param url
-	 * @param actionMapSourse
-	 * @return
-	 */
-	private ActionSourse findActionSourse(String url,
-			Map<String, ActionSourse> actionMapSourse) {
-		ActionSourse actionSourse = null;
-		for(Map.Entry<String, ActionSourse> entry : actionMapSourse.entrySet()) {
-			String actionUrl = entry.getKey();
-			if(actionUrl.contains("*")) {
-				actionUrl = actionUrl.replace("*", "");
-
-				if(url.contains(actionUrl)) {
-					actionSourse = entry.getValue();
-					return actionSourse;
-				}
-			} else {
-				if(actionUrl.equals(url)) {
-					actionSourse = entry.getValue();
-					return actionSourse;
-				}
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * 获取当前的actionMap
-	 * 
-	 * @return
-	 */
-	private Map<String, ActionSourse> getLocalActionMap() {
-		if (actionMap == null) {
-			synchronized (this) {
-				if (actionMap == null) {
-					actionMap = managerHandle.getActionManager().getActionMap();
-				}
-			}
-		}
-		return actionMap;
+		e.printStackTrace();
 	}
 
 }
