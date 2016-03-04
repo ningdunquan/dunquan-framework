@@ -1,4 +1,4 @@
-package org.dunquan.framework.manager;
+package org.dunquan.framework.mvc.manager;
 
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package org.dunquan.framework.loader;
+package org.dunquan.framework.ioc.loader;
 
 public class AnnoApplicationBeanLoader implements ApplicationBeanLoader {
 

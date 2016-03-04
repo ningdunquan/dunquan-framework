@@ -3,7 +3,7 @@ package org.dunquan.framework.util;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.dunquan.framework.exception.MyException;
+import org.dunquan.framework.ioc.exception.MyException;
 import org.w3c.dom.Node;
 
 /**

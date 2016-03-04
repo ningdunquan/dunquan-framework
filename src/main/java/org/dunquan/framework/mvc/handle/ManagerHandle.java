@@ -2,14 +2,14 @@ package org.dunquan.framework.mvc.handle;
 
 import java.io.InputStream;
 
-import org.dunquan.framework.exception.IOCException;
-import org.dunquan.framework.loader.AnnoApplicationBeanLoader;
-import org.dunquan.framework.loader.ApplicationBeanLoader;
-import org.dunquan.framework.loader.XmlApplicationBeanLoader;
-import org.dunquan.framework.manager.ActionManager;
-import org.dunquan.framework.manager.AnnoActionManager;
-import org.dunquan.framework.manager.XmlActionManager;
+import org.dunquan.framework.ioc.exception.IOCException;
+import org.dunquan.framework.ioc.loader.AnnoApplicationBeanLoader;
+import org.dunquan.framework.ioc.loader.ApplicationBeanLoader;
+import org.dunquan.framework.ioc.loader.XmlApplicationBeanLoader;
 import org.dunquan.framework.mvc.exception.ActionException;
+import org.dunquan.framework.mvc.manager.ActionManager;
+import org.dunquan.framework.mvc.manager.AnnoActionManager;
+import org.dunquan.framework.mvc.manager.XmlActionManager;
 
 public class ManagerHandle {
 	

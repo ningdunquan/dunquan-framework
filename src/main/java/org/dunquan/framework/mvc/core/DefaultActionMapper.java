@@ -3,9 +3,9 @@ package org.dunquan.framework.mvc.core;
 import java.util.Map;
 import java.util.Set;
 
-import org.dunquan.framework.manager.ActionManager;
 import org.dunquan.framework.mvc.exception.DispatcherException;
 import org.dunquan.framework.mvc.handle.ManagerHandle;
+import org.dunquan.framework.mvc.manager.ActionManager;
 import org.dunquan.framework.mvc.sourse.ActionSource;
 import org.dunquan.framework.mvc.sourse.ExecuteActionSource;
 import org.dunquan.framework.mvc.sourse.MethodSource;

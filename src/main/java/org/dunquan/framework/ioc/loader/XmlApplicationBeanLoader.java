@@ -1,13 +1,13 @@
-package org.dunquan.framework.loader;
+package org.dunquan.framework.ioc.loader;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dunquan.framework.exception.MyException;
+import org.dunquan.framework.ioc.exception.MyException;
+import org.dunquan.framework.ioc.manager.BeanManager;
+import org.dunquan.framework.ioc.manager.XmlBeanManager;
 import org.dunquan.framework.ioc.sourse.BeanSource;
-import org.dunquan.framework.manager.BeanManager;
-import org.dunquan.framework.manager.XmlBeanManager;
 import org.dunquan.framework.util.BeanUtil;
 import org.dunquan.framework.util.ReflectionUtil;
 import org.dunquan.framework.util.StringUtil;

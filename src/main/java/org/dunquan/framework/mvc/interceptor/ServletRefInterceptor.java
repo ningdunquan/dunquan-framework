@@ -1,12 +1,12 @@
 package org.dunquan.framework.mvc.interceptor;
 
-import org.dunquan.framework.api.ApplicationAble;
-import org.dunquan.framework.api.HttpServletRequestAble;
-import org.dunquan.framework.api.HttpServletResponseAble;
-import org.dunquan.framework.api.HttpSessionAble;
-import org.dunquan.framework.api.RequestAble;
-import org.dunquan.framework.api.ServletContextAble;
-import org.dunquan.framework.api.SessionAble;
+import org.dunquan.framework.mvc.api.ApplicationAble;
+import org.dunquan.framework.mvc.api.HttpServletRequestAble;
+import org.dunquan.framework.mvc.api.HttpServletResponseAble;
+import org.dunquan.framework.mvc.api.HttpSessionAble;
+import org.dunquan.framework.mvc.api.RequestAble;
+import org.dunquan.framework.mvc.api.ServletContextAble;
+import org.dunquan.framework.mvc.api.SessionAble;
 import org.dunquan.framework.mvc.context.ActionContext;
 import org.dunquan.framework.mvc.context.ActionInvocation;
 

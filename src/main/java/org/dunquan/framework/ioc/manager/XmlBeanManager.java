@@ -1,4 +1,4 @@
-package org.dunquan.framework.manager;
+package org.dunquan.framework.ioc.manager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,8 +6,9 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.dunquan.framework.exception.MyException;
+import org.dunquan.framework.ioc.exception.MyException;
 import org.dunquan.framework.ioc.sourse.BeanSource;
+import org.dunquan.framework.mvc.manager.XmlManager;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;

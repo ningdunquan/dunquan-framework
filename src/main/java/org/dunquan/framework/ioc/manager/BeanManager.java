@@ -1,4 +1,4 @@
-package org.dunquan.framework.manager;
+package org.dunquan.framework.ioc.manager;
 
 import java.util.Map;
 

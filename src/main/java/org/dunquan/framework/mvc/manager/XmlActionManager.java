@@ -1,4 +1,4 @@
-package org.dunquan.framework.manager;
+package org.dunquan.framework.mvc.manager;
 
 import java.util.Map;
 import java.util.Set;
@@ -8,7 +8,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.dunquan.framework.exception.MyException;
+import org.dunquan.framework.ioc.exception.MyException;
 import org.dunquan.framework.mvc.sourse.ActionSource;
 import org.dunquan.framework.mvc.sourse.MethodSource;
 import org.dunquan.framework.mvc.sourse.Result;

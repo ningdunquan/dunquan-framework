@@ -1,4 +1,4 @@
-package org.dunquan.framework.api;
+package org.dunquan.framework.mvc.api;
 
 import java.util.Map;
 

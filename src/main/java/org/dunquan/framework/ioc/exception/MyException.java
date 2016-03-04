@@ -1,4 +1,4 @@
-package org.dunquan.framework.exception;
+package org.dunquan.framework.ioc.exception;
 
 public class MyException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
