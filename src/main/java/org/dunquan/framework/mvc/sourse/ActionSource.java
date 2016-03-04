@@ -1,4 +1,4 @@
-package org.dunquan.framework.sourse;
+package org.dunquan.framework.mvc.sourse;
 
 import java.io.Serializable;
 import java.util.Set;

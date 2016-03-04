@@ -37,7 +37,7 @@ public class ReflectionUtil {
 		return instance;
 	}
 
-	private static Class<?> loadClass(String name) {
+	public static Class<?> loadClass(String name) {
 		Class<?> c;
 		
 		try {
@@ -49,7 +49,7 @@ public class ReflectionUtil {
 		return c;
 	}
 
-	private static ClassLoader getClassLoader() {
+	public static ClassLoader getClassLoader() {
 		return Thread.currentThread().getContextClassLoader();
 	}
 

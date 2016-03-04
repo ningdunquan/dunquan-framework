@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.dunquan.framework.exception.MyException;
+import org.dunquan.framework.ioc.sourse.BeanSource;
 import org.dunquan.framework.manager.BeanManager;
 import org.dunquan.framework.manager.XmlBeanManager;
-import org.dunquan.framework.sourse.BeanSource;
 import org.dunquan.framework.util.BeanUtil;
 import org.dunquan.framework.util.ReflectionUtil;
 import org.dunquan.framework.util.StringUtil;

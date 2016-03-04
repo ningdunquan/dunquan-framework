@@ -7,7 +7,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.dunquan.framework.exception.MyException;
-import org.dunquan.framework.sourse.BeanSource;
+import org.dunquan.framework.ioc.sourse.BeanSource;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;

@@ -1,4 +1,4 @@
-package org.dunquan.framework.wrapmap;
+package org.dunquan.framework.mvc.wrap;
 
 import java.io.Serializable;
 import java.util.AbstractMap;

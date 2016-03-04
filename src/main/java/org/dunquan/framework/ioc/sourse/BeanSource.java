@@ -1,4 +1,4 @@
-package org.dunquan.framework.sourse;
+package org.dunquan.framework.ioc.sourse;
 
 import java.util.Map;
 

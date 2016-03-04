@@ -9,9 +9,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.dunquan.framework.exception.MyException;
-import org.dunquan.framework.sourse.ActionSource;
-import org.dunquan.framework.sourse.MethodSource;
-import org.dunquan.framework.sourse.Result;
+import org.dunquan.framework.mvc.sourse.ActionSource;
+import org.dunquan.framework.mvc.sourse.MethodSource;
+import org.dunquan.framework.mvc.sourse.Result;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;

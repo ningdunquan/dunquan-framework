@@ -1,5 +1,6 @@
 package org.dunquan.framework.mvc.constant;
 
+
 public class ViewConstant {
 
 	/**

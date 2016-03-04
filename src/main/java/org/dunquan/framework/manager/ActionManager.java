@@ -6,7 +6,8 @@ import java.util.Map;
 
 
 
-import org.dunquan.framework.sourse.ActionSource;
+
+import org.dunquan.framework.mvc.sourse.ActionSource;
 
 public interface ActionManager {
 

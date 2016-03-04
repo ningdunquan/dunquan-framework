@@ -85,4 +85,9 @@ public class StringUtil implements Beanable {
 		String filed = str.substring(begin).replaceFirst(s, s.toLowerCase());
 		return filed;
 	}
+
+
+	public static boolean isNotEmpty(String name) {
+		return name != null && !"".equals(name);
+	}
 }

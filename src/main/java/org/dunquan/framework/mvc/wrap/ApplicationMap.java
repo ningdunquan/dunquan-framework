@@ -1,4 +1,4 @@
-package org.dunquan.framework.wrapmap;
+package org.dunquan.framework.mvc.wrap;
 
 import javax.servlet.ServletContext;
 import java.io.Serializable;

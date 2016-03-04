@@ -6,9 +6,9 @@ import java.util.Set;
 import org.dunquan.framework.manager.ActionManager;
 import org.dunquan.framework.mvc.exception.DispatcherException;
 import org.dunquan.framework.mvc.handle.ManagerHandle;
-import org.dunquan.framework.sourse.ActionSource;
-import org.dunquan.framework.sourse.ExecuteActionSource;
-import org.dunquan.framework.sourse.MethodSource;
+import org.dunquan.framework.mvc.sourse.ActionSource;
+import org.dunquan.framework.mvc.sourse.ExecuteActionSource;
+import org.dunquan.framework.mvc.sourse.MethodSource;
 
 public class DefaultActionMapper implements ActionMapper {
 

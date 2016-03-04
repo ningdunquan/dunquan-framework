@@ -10,9 +10,9 @@ import javax.servlet.http.HttpSession;
 
 import org.dunquan.framework.mvc.context.ActionContext;
 import org.dunquan.framework.mvc.upload.UploadHelper;
-import org.dunquan.framework.wrapmap.ApplicationMap;
-import org.dunquan.framework.wrapmap.RequestMap;
-import org.dunquan.framework.wrapmap.SessionMap;
+import org.dunquan.framework.mvc.wrap.ApplicationMap;
+import org.dunquan.framework.mvc.wrap.RequestMap;
+import org.dunquan.framework.mvc.wrap.SessionMap;
 
 public class BeforePrepareHandle {
 

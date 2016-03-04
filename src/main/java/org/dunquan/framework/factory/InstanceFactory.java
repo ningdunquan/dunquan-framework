@@ -9,10 +9,11 @@ import org.dunquan.framework.mvc.core.DefaultActionHandler;
 import org.dunquan.framework.mvc.core.DefaultActionMapper;
 import org.dunquan.framework.mvc.core.DefaultExceptionHandler;
 import org.dunquan.framework.mvc.core.ExceptionHandler;
-import org.dunquan.framework.mvc.handle.ManagerHandle;
 import org.dunquan.framework.mvc.interceptor.DataValidateStrategy;
 import org.dunquan.framework.mvc.interceptor.UploadValidateStrategy;
 import org.dunquan.framework.mvc.interceptor.ValidateStrategy;
+import org.dunquan.framework.mvc.scanner.ClassScanner;
+import org.dunquan.framework.mvc.scanner.DefaultClassScanner;
 import org.dunquan.framework.mvc.view.DefaultViewResolver;
 import org.dunquan.framework.mvc.view.FreeMarkerViewManager;
 import org.dunquan.framework.mvc.view.JspViewManager;
@@ -32,7 +33,7 @@ public class InstanceFactory {
     /**
      * ClassScanner
      */
-    private static final String CLASS_SCANNER = "dunquan.framework.custom.class_scanner";
+    private static final String CLASS_SCANNER = "dunquan.framework.mvc.class_scanner";
 
     /**
      * ActionMapper
@@ -79,6 +80,10 @@ public class InstanceFactory {
      */
     private static final String UPLOAD_VALIDATE_STRATEGY = "dunquan.framework.mvc.upload_validate_strategy";
     
+    
+    public static ClassScanner getClassScanner() {
+    	return getInstance(CLASS_SCANNER, DefaultClassScanner.class);
+    }
     
     /**
      * 获取actionMapper

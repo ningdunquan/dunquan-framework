@@ -1,7 +1,7 @@
 package org.dunquan.framework.mvc.core;
 
 import org.dunquan.framework.mvc.exception.DispatcherException;
-import org.dunquan.framework.sourse.ExecuteActionSource;
+import org.dunquan.framework.mvc.sourse.ExecuteActionSource;
 
 public interface ActionMapper {
 

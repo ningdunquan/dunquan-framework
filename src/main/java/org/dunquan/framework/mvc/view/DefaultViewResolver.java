@@ -14,10 +14,10 @@ import org.dunquan.framework.mvc.context.ExecuteContext;
 import org.dunquan.framework.mvc.core.ActionHandler;
 import org.dunquan.framework.mvc.exception.DispatcherException;
 import org.dunquan.framework.mvc.handle.ManagerHandle;
+import org.dunquan.framework.mvc.sourse.ActionSource;
+import org.dunquan.framework.mvc.sourse.ExecuteActionSource;
+import org.dunquan.framework.mvc.sourse.Result;
 import org.dunquan.framework.mvc.utils.WebUtils;
-import org.dunquan.framework.sourse.ActionSource;
-import org.dunquan.framework.sourse.ExecuteActionSource;
-import org.dunquan.framework.sourse.Result;
 import org.dunquan.framework.util.ReflectionUtil;
 
 public class DefaultViewResolver implements ViewResolver {
@@ -52,7 +52,17 @@ public class DefaultViewResolver implements ViewResolver {
 			Result result = findResult(actionSource.getName(), value);
 			
 			if(result == null) {
-				throw new DispatcherException("no action result");
+				result = new Result();
+				if(value.startsWith("redirect:")) {
+					result.setType(Result.RE_REDIRECT);
+				}else if(value.startsWith("action:")) {
+					result.setType(Result.RE_ACTION);
+				}else {
+					result.setType(Result.RE_DISPATCHER);
+				}
+				String resultValue = getResultValue(value);
+				result.setResultValue(resultValue);
+				
 			}
 			
 			if(Result.RE_ACTION.equalsIgnoreCase(result.getType())) {
@@ -70,8 +80,18 @@ public class DefaultViewResolver implements ViewResolver {
 	}
 
 	/**
+	 * 获取resultValue
+	 * @param value
+	 * @return
+	 */
+	private String getResultValue(String value) {
+		int index = value.indexOf(":") + 1;
+		return value.substring(index);
+	}
+
+	/**
 	 * 解析Result视图
-	 * @param actionSourse
+	 * @param name
 	 * @param action
 	 * @param request
 	 * @param response
@@ -96,7 +116,7 @@ public class DefaultViewResolver implements ViewResolver {
 					try {
 						outValue = field.get(action);
 					} catch (Exception e) {
-						
+						throw new DispatcherException("field error", e);
 					}
 					data.put(out, outValue);
 				}
