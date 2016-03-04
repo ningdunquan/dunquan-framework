@@ -1,2 +1,2 @@
 # dunquan-framework
-个人的mvc框架
+轻量级Web一站式开发框架
